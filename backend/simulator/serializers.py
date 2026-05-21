@@ -48,6 +48,6 @@ class SimulationRequestSerializer(serializers.Serializer):
         return {
             "system": validated_data['system'],
             "districts": [District(**d) for d in validated_data['districts']],
-            "candidates": [District(**d) for d in validated_data['candidates']],
-            "voters": [District(**d) for d in validated_data['voters']]
+            "candidates": [Candidate(**d) for d in validated_data['candidates']],
+            "voters": [VoterBlock(**d) for d in validated_data['voters']]
         }
