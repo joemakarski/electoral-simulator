@@ -1,65 +1,81 @@
-import Image from "next/image";
+'use client';
+
+import { clear } from "console";
+import { useState } from "react";
+
+type Tile = { id: number; district_id: string };
 
 export default function Home() {
+
+  // The map
+  const [grid, setGrid] = useState<Tile[]>(
+    Array.from({ length: 100 }, (_, i) => ({ id: i, district_id: "d0" }))
+  );
+  // The paintbrush (default: @d1)
+  const [activeBrush, setActiveBrush] = useState<string>("d1");
+  
+  const [results, setResults] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  
+  // Return a new grid, but the clicked grid becomes the brush's colour
+  const paintTile = (tileId: number) => {
+    setGrid(prevGrid =>
+      prevGrid.map(tile =>
+        tile.id === tileId
+          ? {
+              ...tile,
+              district_id: tile.district_id === "d0" ? "d1" : "d0"
+            }
+          : tile
+      )
+    );
+  };
+
+  const clearGrid = () => {
+    setGrid(prevGrid =>
+      prevGrid.map(tile => ({
+        ...tile,
+        district_id: "d0"
+      }))
+    );
+  };
+
+  //TODO: return statement
+  
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-gray-50 p-8 text-black">
+      <div className="max-w-5xl mx-auto grid grid-cols-2 gap-12">
+        
+        {/* LEFT COLUMN: Map area */}
+        <div>
+          <h1 className="text-3xl font-bold mb-4">Electoral Map</h1>
+          {/* The CSS Grid Map */}
+          <div className="grid grid-cols-10 gap-1 bg-blue-100 p-2 w-fit">
+            {grid.map((tile) => (
+              <div
+                key={tile.id}
+                onClick={() => paintTile(tile.id)}
+                className={`w-10 h-10 ${
+                  tile.district_id === "d0" ? "bg-blue-200" : "bg-emerald-600"
+                } hover:brightness-90`}
+              />
+            ))}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* RIGHT COLUMN: Controls */}
+        <div className="flex flex-col gap-y-3 w-max">
+          <h2 className="text-2xl font-bold mb-4">Simulation Engine</h2>
+          <button className="bg-green-600 text-white p-3 rounded hover:brightness-90">
+            Run Election
+          </button>
+          <button className="bg-red-600 text-white p-3 rounded hover:brightness-90" onClick={clearGrid}>
+            Clear Grid
+          </button>
         </div>
-      </main>
+
+      </div>
     </div>
   );
 }
