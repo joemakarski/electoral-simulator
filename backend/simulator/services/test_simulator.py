@@ -2,6 +2,7 @@ import json
 
 from simulator.domain.entities import District, Candidate, VoterBlock
 from simulator.systems.fptp import FirstPastThePost
+from simulator.systems.dhondt import DHondtProportionalRepresentation
 
 ENGINE = FirstPastThePost()
 
