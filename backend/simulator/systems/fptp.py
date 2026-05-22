@@ -38,31 +38,15 @@ class FirstPastThePost(ElectoralSystem):
         return ballots
     
     def allocate_seats(self, ballots: List[Ballot], districts: List[District], candidates: List[Candidate], **kwargs) -> Dict:
-        party_lookup = {c.id: c.party_id for c in candidates}
-
-        # Initialise with format: { "district_id": { "candidate_id": vote_count } }
-        # "At this district: Candidate A got N votes; ..."
-        local_votes: Dict[str, Dict[str, int]] = {
-            d.id: {
-                c.id: 0 for c in candidates if c.district_id == d.id or c.district_id is None
-            } for d in districts
-        }
-        national_party_votes: Dict[str, int] = defaultdict(int)
-
-        for ballot in ballots:
-            d_id = ballot.district_id
-            choice_id = ballot.choices[0] # FPTP: One vote
-            weight = ballot.population_weight
-
-            local_votes[d_id][choice_id] += weight
-            national_party_votes[party_lookup[choice_id]] += weight
+        # Tally local and national votes
+        (local_votes, national_party_votes) = self._tally_standard_votes(ballots, candidates, districts)
         
         # Now determine the winners
         winners = {"NATIONAL_LIST": []} # no national list
-        
+
         for (d_id, vote_counts) in local_votes.items():
             # FPTP: Highest vote count gets the single seat
-            if vote_counts:
+            if vote_counts and any(v > 0 for v in vote_counts.values()):
                 winner_id = max(vote_counts, key=lambda k: vote_counts[k])
                 winners[d_id] = [winner_id]
             else:

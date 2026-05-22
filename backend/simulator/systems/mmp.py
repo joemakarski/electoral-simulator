@@ -61,10 +61,18 @@ class MixedMemberProportionalRepresentation(ElectoralSystem):
         party_lookup = {c.id: c.party_id for c in candidates}
         winners = {d.id: [] for d in districts}
         winners["NATIONAL_LIST"] = [] # A special bucket for the top-up seats
+        notes = []
 
         # 1. Tally local and party votes
-        local_votes: Dict[str, Dict[str, int]] = {d.id: defaultdict(int) for d in districts}
-        party_votes: Dict[str, int] = defaultdict(int)
+        local_votes: Dict[str, Dict[str, int]] = {
+            d.id: {c.id: 0 for c in candidates if c.district_id == d.id} 
+            for d in districts
+        }
+        
+        # Explicitly initialize all parties to 0
+        all_parties = {c.party_id for c in candidates}
+        party_votes: Dict[str, int] = {p_id: 0 for p_id in all_parties}
+        
         total_party_votes = 0
 
         for ballot in ballots:
@@ -99,16 +107,10 @@ class MixedMemberProportionalRepresentation(ElectoralSystem):
 
         # 4. Calculate proportional entitlement
         total_parliament_seats = local_seats_available + list_seats_available
-        entitlements = {p_id: 0 for p_id in eligible_parties.keys()}
-
-        for _ in range(total_parliament_seats):
-            quotients = {
-                p_id: (votes / (entitlements[p_id] + 1)) 
-                for p_id, votes in eligible_parties.items()
-            }
-            if quotients:
-                winning_party = max(quotients, key=lambda k: quotients[k])
-                entitlements[winning_party] += 1
+        entitlements = self._calculate_dhondt_seats(
+            votes=eligible_parties,
+            total_seats=total_parliament_seats,
+        )
         
         # 5. Calculate and award top-up seats
         for (p_id, total_owed) in entitlements.items():
@@ -120,6 +122,12 @@ class MixedMemberProportionalRepresentation(ElectoralSystem):
                 # Find all at-large candidates for this party
                 party_list_candidates = [c.id for c in candidates if c.party_id == p_id and c.district_id is None]
                 
+                # Check for shortfalls
+                if len(party_list_candidates) < top_up_needed:
+                    shortfall = top_up_needed - len(party_list_candidates)
+                    notes.append(f"Party {p_id} forfeited {shortfall} national list seat(s) due to a lack of candidates.")
+                    top_up_needed = len(party_list_candidates)
+
                 # Sort them by their individual popularity (Open List)
                 party_list_candidates.sort(
                     key=lambda c_id: sum(b.population_weight for b in ballots if b.choices[1] == c_id), 
@@ -132,12 +140,13 @@ class MixedMemberProportionalRepresentation(ElectoralSystem):
         return {
             "results": {
                 "local_votes": {k: dict(v) for k, v in local_votes.items()},
-                "national_party_votes": dict(party_votes)
+                "national_party_votes": dict(party_votes),
             },
             "winners": winners,
             "stats": {
                 "total_parliament_size": sum(len(w) for w in winners.values()),
-                "entitlements": entitlements
+                "entitlements": entitlements,
+                "notes": notes,
             }
         }
     

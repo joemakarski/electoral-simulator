@@ -43,20 +43,7 @@ class DHondtProportionalRepresentation(ElectoralSystem):
     def allocate_seats(self, ballots: List[Ballot], districts: List[District], candidates: List[Candidate], **kwargs) -> dict:
         party_lookup = {c.id: c.party_id for c in candidates}
 
-        local_votes: Dict[str, Dict[str, int]] = {
-            d.id: {c.id: 0 for c in candidates if c.district_id == d.id or c.district_id is None} 
-            for d in districts
-        }
-        national_party_votes: Dict[str, int] = defaultdict(int)
-
-        # Tally candidate results
-        for ballot in ballots:
-            d_id = ballot.district_id
-            choice_id = ballot.choices[0]
-            weight = ballot.population_weight
-            
-            local_votes[d_id][choice_id] += weight
-            national_party_votes[party_lookup[choice_id]] += weight
+        (local_votes, national_party_votes) = self._tally_standard_votes(ballots, candidates, districts)
 
         winners = {"NATIONAL_LIST": []}
         notes = []
@@ -81,35 +68,27 @@ class DHondtProportionalRepresentation(ElectoralSystem):
             }
              
             # Initialise, then start allocating seats via D'Hondt
-            seats_by_party = {p_id: 0 for p_id in party_votes.keys()}
-            district_winners = []
-        
-            # Formula: Total Votes / (party seats so far + 1), for each party, until seats filled
+            candidate_limits = {p_id: len(candidates) for (p_id, candidates) in district_candidates.items()}
             
-            for _ in range(d.num_seats):
-                # Filter to parties which have unelected candidates
-                eligible_party_votes = {
-                    p_id: votes
-                    for (p_id, votes) in party_votes.items()
-                    if seats_by_party[p_id] < len(district_candidates[p_id])
-                }
-                if not eligible_party_votes: 
-                    notes.append(f"District {d.name} forfeited seats due to lack of eligible candidates.")
-                    break
-
-                quotients = {
-                    p_id: (votes / (seats_by_party[p_id] + 1))
-                    for (p_id, votes) in eligible_party_votes.items()
-                }
-
-                winning_party = max(quotients, key=lambda k: quotients[k])
-
-                # Candidate index points to the candidate list of a party
-                candidate_index = seats_by_party[winning_party]
-                district_winners.append(district_candidates[winning_party][candidate_index])
-
-                seats_by_party[winning_party] += 1
-                
+            # Call the universal D'Hondt math engine
+            seats_won = self._calculate_dhondt_seats(
+                votes=party_votes, 
+                total_seats=d.num_seats,
+                max_seats_per_party=candidate_limits
+            )
+            
+            # Check if any seats were forfeited
+            total_awarded = sum(seats_won.values())
+            if total_awarded < d.num_seats:
+                notes.append(f"District {d.name} forfeited {d.num_seats - total_awarded} seat(s) due to lack of eligible candidates.")
+            
+            # Assign the candidates to the seats won
+            district_winners = []
+            for p_id, count in seats_won.items():
+                if count > 0:
+                    # Slice in the top N
+                    district_winners.extend(district_candidates[p_id][:count])
+                    
             winners[d.id] = district_winners
 
 
