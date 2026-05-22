@@ -1,0 +1,24 @@
+{
+  "system": "mmp",
+  "districts": [
+    { "id": "d1", "name": "Urban Center", "num_seats": 1 },
+    { "id": "d2", "name": "Rural County", "num_seats": 1 }
+  ],
+  "candidates": [
+    { "id": "c1", "name": "Alice (Red@Urban)", "party_id": "RED", "positions": {"economy": -0.8}, "district_id": "d1" },
+    { "id": "c2", "name": "Bob (Blue@Urban)", "party_id": "BLUE", "positions": {"economy": 0.8}, "district_id": "d1" },
+    { "id": "c3", "name": "Charlie (Red@Rural)", "party_id": "RED", "positions": {"economy": -0.8}, "district_id": "d2" },
+    { "id": "c4", "name": "Diana (Blue@Rural)", "party_id": "BLUE", "positions": {"economy": 0.8}, "district_id": "d2" },
+
+    { "id": "L1", "name": "Eve (List Red)", "party_id": "RED", "positions": {"economy": -0.8}, "district_id": null },
+    { "id": "L2", "name": "Frank (List Blue)", "party_id": "BLUE", "positions": {"economy": 0.8}, "district_id": null },
+    { "id": "L3", "name": "Grace (List Green)", "party_id": "GREEN", "positions": {"economy": 0.0}, "district_id": null },
+    { "id": "L4", "name": "Hank (List Green)", "party_id": "GREEN", "positions": {"economy": 0.0}, "district_id": null }
+  ],
+  "voters": [
+    { "population": 40000, "positions": {"economy": -0.8}, "district_id": "d1" }, 
+    { "population": 30000, "positions": {"economy": -0.2}, "district_id": "d1" }, 
+    { "population": 40000, "positions": {"economy": 0.8}, "district_id": "d2" }, 
+    { "population": 30000, "positions": {"economy": 0.2}, "district_id": "d2" } 
+  ]
+}

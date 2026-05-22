@@ -1,0 +1,22 @@
+{
+  "system": "dhondt",
+  "districts": [
+    { "id": "d1", "name": "Urban Center", "num_seats": 2 },
+    { "id": "d2", "name": "Rural County", "num_seats": 1 }
+  ],
+  "candidates": [
+    { "id": "c1", "name": "Alice", "party_id": "RED", "positions": {"economy": -0.8, "social": -0.8}, "district_id": "d1" },
+    { "id": "c2", "name": "Bob", "party_id": "BLUE", "positions": {"economy": 0.8, "social": 0.8}, "district_id": "d1" },
+    { "id": "c3", "name": "Charlie", "party_id": "RED", "positions": {"economy": -0.3, "social": 0.1}, "district_id": "d1" },
+    { "id": "c4", "name": "Diana", "party_id": "BLUE", "positions": {"economy": 0.7, "social": 0.9}, "district_id": "d2" },
+    { "id": "c5", "name": "Evan", "party_id": "RED", "positions": {"economy": -0.7, "social": -0.6}, "district_id": "d2" },
+    { "id": "c6", "name": "Fin", "party_id": "RED", "positions": {"economy": -0.9, "social": 0.8}, "district_id": "d1" }
+  ],
+  "voters": [
+    { "population": 20000, "positions": {"economy": -0.9, "social": -0.7}, "district_id": "d1" },
+    { "population": 30000, "positions": {"economy": 0.7, "social": 0.9}, "district_id": "d1" },
+    { "population": 20000, "positions": {"economy": 0.1, "social": 0.0}, "district_id": "d1" },
+    { "population": 50000, "positions": {"economy": 0.8, "social": 0.8}, "district_id": "d2" },
+    { "population": 10000, "positions": {"economy": -0.5, "social": -0.5}, "district_id": "d2" }
+  ]
+}

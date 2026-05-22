@@ -1,39 +1,13 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 note: curl:
-curl.exe -X POST http://localhost:8000/api/simulate/ -H "Content-Type: application/json" --data-binary "@test_payload.json" | jq
+
+curl.exe -X POST http://localhost:8000/api/simulate/ -H "Content-Type: application/json" --data-binary "@mmp_payload.json" | jq
+
+Use cases:
+- As a user, I want to be able to select a number of district tiles, then lock those in to create a nation(?) of districts.
+- As a user, once I have a nation, I want to be able to inspect each district too.
+- As a user, I want to be able to view and manually adjust the voting demographics of each of the districts (perhaps by having sets of voter blocks per district?).
+- As a user, I want to have some selectable algorithms to distribute some pre-set demographics across different districts in case manually adjusting is too long, making it similar to real-life.
+- As a user, I want to select a national electoral system (e.g. FPTP/regional PR/RCV/STV/multi-member/PR-at-large/approval/...) to run in this nation (or should there be separate systems local and national?- but some are dependent on each other e.g. MMP).
+- As a user, I want to inspect each district to see the district-level results, and visually see how the result was achieved.
+- As a user, I want to be able to see the results for the nation at-large too, and visually see how the result was achieved.
