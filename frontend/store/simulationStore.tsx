@@ -32,9 +32,13 @@ interface SimulationState {
     isNationLocked: boolean;
     setNationLocked: (locked: boolean) => void;
 
-    // System
+    // Electoral system
     activeSystem: string;
     setActiveSystem: (system: string) => void;
+
+    // Brush
+    activeBrush: string | null;
+    setActiveBrush: (brush: string | null) => void;
 }
 
 // Setting up the store
@@ -49,7 +53,7 @@ export const useSimulationStore = create<SimulationState>((set) => ({
     setGrid: (grid) => set({ grid }),
 
     updateTileDistrict: (tileId, districtId) => set((state) => ({
-        grid: state.grid.map(t => (t.id===tileId ? {...t, districtId: districtId} : t))
+        grid: state.grid.map(t => t.id===tileId ? { ...t, district_id: districtId } : t)
     })),
     
     districts: [], // initially empty
@@ -61,4 +65,7 @@ export const useSimulationStore = create<SimulationState>((set) => ({
 
     activeSystem: "fptp",
     setActiveSystem: (system) => set({activeSystem: system}),
+
+    activeBrush: null,
+    setActiveBrush: (brush) => set({ activeBrush: brush }),
 }));

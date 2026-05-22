@@ -1,9 +1,8 @@
 'use client';
 
 import { useSimulationStore } from '@/store/simulationStore';
-// TODO:
-// import MapGrid from '@/components/MapGrid'; 
-// import BuilderControls from '@/components/BuilderControls';
+import MapGrid from '@/components/MapGrid'; 
+import BuilderControls from '@/components/BuilderControls';
 // import SimulationControls from '@/components/SimulationControls';
 
 export default function Home() {
@@ -19,11 +18,8 @@ export default function Home() {
             {isNationLocked ? "Electoral Dashboard" : "Nation Builder"}
           </h1>
           
-          <div className="bg-white p-6 rounded-lg shadow-md border">
-            {/* <MapGrid /> */}
-            <div className="w-full h-96 bg-gray-200 rounded flex items-center justify-center text-gray-500">
-               [Map Component Will Go Here]
-            </div>
+          <div className="bg-white p-6 rounded-lg shadow-md border flex justify-center">
+            <MapGrid />
           </div>
         </div>
 
@@ -32,7 +28,9 @@ export default function Home() {
           {isNationLocked ? (
              <div className="bg-white p-6 rounded shadow border">Simulation Tools</div>
           ) : (
-             <div className="bg-white p-6 rounded shadow border">Geography Tools</div>
+             <div className="bg-white p-6 rounded shadow border">
+              <BuilderControls/>
+            </div>
           )}
         </div>
 
