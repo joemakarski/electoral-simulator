@@ -1,4 +1,5 @@
 from typing import Dict, List
+from collections import defaultdict
 
 from simulator.domain.entities import VoterBlock, Candidate, Ballot, District
 from simulator.systems.base import ElectoralSystem
@@ -37,24 +38,29 @@ class FirstPastThePost(ElectoralSystem):
         return ballots
     
     def allocate_seats(self, ballots: List[Ballot], districts: List[District], candidates: List[Candidate], **kwargs) -> Dict:
+        party_lookup = {c.id: c.party_id for c in candidates}
 
         # Initialise with format: { "district_id": { "candidate_id": vote_count } }
         # "At this district: Candidate A got N votes; ..."
-        results: Dict[str, Dict[str, int]] = {
+        local_votes: Dict[str, Dict[str, int]] = {
             d.id: {
                 c.id: 0 for c in candidates if c.district_id == d.id or c.district_id is None
             } for d in districts
         }
+        national_party_votes: Dict[str, int] = defaultdict(int)
 
         for ballot in ballots:
             d_id = ballot.district_id
             choice_id = ballot.choices[0] # FPTP: One vote
+            weight = ballot.population_weight
 
-            results[d_id][choice_id] += ballot.population_weight
+            local_votes[d_id][choice_id] += weight
+            national_party_votes[party_lookup[choice_id]] += weight
         
         # Now determine the winners
-        winners = {}
-        for (d_id, vote_counts) in results.items():
+        winners = {"NATIONAL_LIST": []} # no national list
+        
+        for (d_id, vote_counts) in local_votes.items():
             # FPTP: Highest vote count gets the single seat
             if vote_counts:
                 winner_id = max(vote_counts, key=lambda k: vote_counts[k])
@@ -63,6 +69,14 @@ class FirstPastThePost(ElectoralSystem):
                 winners[d_id] = []
 
         return {
-            "results": results,
+            "results": {
+                "local_votes": local_votes,
+                "national_party_votes": dict(national_party_votes)
+            },
             "winners": winners,
+            "stats": {
+                "total_parliament_size": sum(len(w) for w in winners.values()),
+                "entitlements": {}, # FPTP doesn't have proportional entitlements
+                "notes": []
+            }
         }

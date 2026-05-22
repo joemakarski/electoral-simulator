@@ -8,10 +8,12 @@ from simulator.serializers import SimulationRequestSerializer
 from simulator.systems.base import ElectoralSystem
 from simulator.systems.fptp import FirstPastThePost
 from simulator.systems.dhondt import DHondtProportionalRepresentation
+from simulator.systems.mmp import MixedMemberProportionalRepresentation
 
 SYSTEM_REGISTRY = {
     'fptp': FirstPastThePost(),
-    'dhondt': DHondtProportionalRepresentation()
+    'dhondt': DHondtProportionalRepresentation(),
+    'mmp': MixedMemberProportionalRepresentation(),
 }
 
 class RunSimulationView(APIView):

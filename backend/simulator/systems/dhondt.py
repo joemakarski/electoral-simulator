@@ -1,4 +1,5 @@
 from typing import Dict, List
+from collections import defaultdict
 
 from simulator.domain.entities import VoterBlock, Candidate, Ballot, District
 from simulator.systems.base import ElectoralSystem
@@ -6,7 +7,7 @@ from simulator.systems.utils import calculate_distance
 
 class DHondtProportionalRepresentation(ElectoralSystem):
     """
-    Implements Party-List Proportional Representation using the D'Hondt method.
+    Implements Regional Party-List Proportional Representation using the D'Hondt method.
     Assumes Open List (seats go to the highest voted candidates within the winning party).
     """
     def __str__(self):
@@ -40,30 +41,35 @@ class DHondtProportionalRepresentation(ElectoralSystem):
         return ballots
 
     def allocate_seats(self, ballots: List[Ballot], districts: List[District], candidates: List[Candidate], **kwargs) -> dict:
-        # Initialise results
-        results: Dict[str, Dict[str, int]] = {
-            d.id: {
-                c.id: 0 for c in candidates if c.district_id == d.id or c.district_id == None
-            } for d in districts
+        party_lookup = {c.id: c.party_id for c in candidates}
+
+        local_votes: Dict[str, Dict[str, int]] = {
+            d.id: {c.id: 0 for c in candidates if c.district_id == d.id or c.district_id is None} 
+            for d in districts
         }
+        national_party_votes: Dict[str, int] = defaultdict(int)
 
         # Tally candidate results
         for ballot in ballots:
-            results[ballot.district_id][ballot.choices[0]] += ballot.population_weight
-        
-        party_lookup = {c.id: c.party_id for c in candidates}
+            d_id = ballot.district_id
+            choice_id = ballot.choices[0]
+            weight = ballot.population_weight
+            
+            local_votes[d_id][choice_id] += weight
+            national_party_votes[party_lookup[choice_id]] += weight
 
-        winners = {}
+        winners = {"NATIONAL_LIST": []}
+        notes = []
 
         # Each district had its own proportional election
         for d in districts:
-            district_votes = results[d.id]
+            district_votes = local_votes[d.id]
 
             # Agreggate votes by party
-            party_votes = {}
+            party_votes = defaultdict(int)
             for (c_id, votes) in district_votes.items():
                 p_id = party_lookup[c_id]
-                party_votes[p_id] = party_votes.get(p_id, 0) + votes
+                party_votes[p_id] = party_votes[p_id] + votes
 
             district_candidates = {
                 p_id: sorted(
@@ -88,6 +94,7 @@ class DHondtProportionalRepresentation(ElectoralSystem):
                     if seats_by_party[p_id] < len(district_candidates[p_id])
                 }
                 if not eligible_party_votes: 
+                    notes.append(f"District {d.name} forfeited seats due to lack of eligible candidates.")
                     break
 
                 quotients = {
@@ -107,6 +114,14 @@ class DHondtProportionalRepresentation(ElectoralSystem):
 
 
         return {
-            "results": results,
+            "results": {
+                "local_votes": local_votes,
+                "national_party_votes": dict(national_party_votes)
+            },
             "winners": winners,
+            "stats": {
+                "total_parliament_size": sum(len(w) for w in winners.values()),
+                "entitlements": {},
+                "notes": notes
+            }
         }
