@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 
+const CANDIDATE_LIST_SIZE = 15
+
 export type PositionVector = Record<string, number>;
 
 export type Tile = {
@@ -171,23 +173,27 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
 
         parties.forEach(party => {
             // 1. Create a National List candidate
-            newCandidates.push({
-                id: `c_${party.id}_national`,
-                name: `${party.name} (List)`,
-                party_id: party.id,
-                positions: { ...party.basePositions },
-                district_id: null
-            });
+            for (let i = 0; i < CANDIDATE_LIST_SIZE; i++) {
+                newCandidates.push({ 
+                    id: `c_${party.id}_national_${i}`, 
+                    name: `${party.name} (List ${i+1})`, 
+                    party_id: party.id, 
+                    positions: { ...party.basePositions }, 
+                    district_id: null 
+                }); 
+            }
 
             // 2. Create one local candidate for every district
             districts.forEach(district => {
-                newCandidates.push({
-                    id: `c_${party.id}_${district.id}`,
-                    name: `${party.name} Candidate`,
-                    party_id: party.id,
-                    positions: { ...party.basePositions }, // TODO: Add random fuzzing
-                    district_id: district.id
-                });
+                for (let i = 0; i < district.num_seats; i++) {
+                    newCandidates.push({ 
+                        id: `c_${party.id}_${district.id}_${i}`, 
+                        name: `${party.name} (Local ${i+1})`, 
+                        party_id: party.id, 
+                        positions: { ...party.basePositions }, // TODO: random fuzzing
+                        district_id: district.id
+                    })
+                }
             });
         });
 
