@@ -3,7 +3,7 @@
 import { useSimulationStore } from '@/store/simulationStore';
 import MapGrid from '@/components/MapGrid'; 
 import BuilderControls from '@/components/BuilderControls';
-// import SimulationControls from '@/components/SimulationControls';
+import SimulationControls from '@/components/SimulationControls';
 
 export default function Home() {
   const { isNationLocked } = useSimulationStore();
@@ -26,11 +26,13 @@ export default function Home() {
         {/* Right Column: The Controls */}
         <div className="col-span-1">
           {isNationLocked ? (
-             <div className="bg-white p-6 rounded shadow border">Simulation Tools</div>
+             <div className="bg-white p-6 rounded shadow border">
+               <SimulationControls />
+             </div>
           ) : (
              <div className="bg-white p-6 rounded shadow border">
-              <BuilderControls/>
-            </div>
+               <BuilderControls/>
+             </div>
           )}
         </div>
 

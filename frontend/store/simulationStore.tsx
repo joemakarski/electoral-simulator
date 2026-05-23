@@ -15,6 +15,13 @@ export type District = {
     name: string;
     num_seats: number;
 };
+export type Candidate = {
+  id: string;
+  name: string;
+  party_id: string;
+  positions: PositionVector;
+  district_id: string | null;
+};
 
 // The Zustand store
 interface SimulationState {
@@ -39,6 +46,12 @@ interface SimulationState {
     // Brush
     activeBrush: string | null;
     setActiveBrush: (brush: string | null) => void;
+
+    // Candidates
+    candidates: Candidate[];
+    setCandidates: (candidates: Candidate[]) => void;
+    results: any;
+    setResults: (results: any) => void;    
 }
 
 // Setting up the store
@@ -68,4 +81,14 @@ export const useSimulationStore = create<SimulationState>((set) => ({
 
     activeBrush: null,
     setActiveBrush: (brush) => set({ activeBrush: brush }),
+
+    candidates: [
+        // Some default national candidates
+        { id: "c1", name: "Alice", party_id: "RED", positions: { economy: -0.8, social: -0.8 }, district_id: null },
+        { id: "c2", name: "Bob", party_id: "BLUE", positions: { economy: 0.8, social: 0.8 }, district_id: null },
+        { id: "c3", name: "Charlie", party_id: "GREEN", positions: { economy: 0.0, social: 0.0 }, district_id: null },
+    ],
+    setCandidates: (candidates) => set({ candidates }),
+    results: null,
+    setResults: (results) => set({ results }),
 }));
