@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSimulationStore } from "@/store/simulationStore";
 
-export default function DemographicsConfig() {
+export default function     DemographicsConfig() {
   const { 
     demographicProfiles, 
     addDemographicProfile, 
@@ -65,7 +65,7 @@ export default function DemographicsConfig() {
       </div>
 
       {/* Profiles List */}
-      <div className="flex flex-col gap-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+      <div className="flex flex-col gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
         {demographicProfiles.map((p) => (
           <div key={p.id} className="bg-white border rounded-lg p-4 shadow-sm shrink-0" style={{ borderLeft: `6px solid ${p.color}` }}>
             <div className="flex justify-between items-start mb-3">

@@ -60,7 +60,7 @@ export default function LocalDistrictSandbox() {
         {localCandidates.length === 0 ? (
           <p className="text-sm text-gray-500 italic">No candidates generated yet. Run the simulation to spawn candidates.</p>
         ) : (
-          <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
             {localCandidates.map(cand => {
               const party = parties.find(p => p.id === cand.party_id);
               return (

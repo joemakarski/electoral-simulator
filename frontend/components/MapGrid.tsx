@@ -53,11 +53,11 @@ export default function MapGrid() {
     }
 
     // Before simulation, show standard active district styling
-    let baseClass = "bg-taupe-400 text-white font-bold shadow-md transition-all";
+    let baseClass = "bg-taupe-500 text-white font-bold shadow-md transition-all";
     if (isSelected) {
       baseClass += " ring-4 ring-black/40 scale-95 z-10";
     } else if (hasSelection) {
-      baseClass += " opacity-25 scale-95 grayscale-[20%]";
+      baseClass += " opacity-50 scale-95 grayscale-[20%]";
     }
 
     return { 

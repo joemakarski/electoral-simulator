@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useSimulationStore } from '@/store/simulationStore';
 import MapGrid from '@/components/MapGrid'; 
 import DistrictInspector from '@/components/DistrictInspector';
@@ -11,6 +12,15 @@ import LocalDistrictSandbox from '@/components/LocalDistrictSandbox';
 
 export default function Home() {
   const { isNationLocked, selectedDistrictId } = useSimulationStore();
+   1
+  const [builderTab, setBuilderTab] = useState<'axes' | 'voters' | 'districts'>('axes');
+
+  // If the user clicks the map, auto-switch to the District tab so they can inspect it
+  useEffect(() => {
+    if (!isNationLocked && selectedDistrictId !== null) {
+      setBuilderTab('districts');
+    }
+  }, [selectedDistrictId, isNationLocked]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-8 text-black">
@@ -18,11 +28,11 @@ export default function Home() {
         
         {/* Left/Center Column: The Map */}
         <div className="col-span-2">
-          <h1 className="text-3xl font-bold mb-4">
+          <h1 className="text-3xl font-bold mb-4 text-gray-800">
             {isNationLocked ? "Electoral Sandbox" : "Nation Builder"}
           </h1>
           
-          <div className="bg-white p-6 rounded-lg shadow-md border flex justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-sm border flex justify-center top-8">
             <MapGrid />
           </div>
 
@@ -33,23 +43,54 @@ export default function Home() {
         <div className="col-span-1 flex flex-col gap-6">
           
           {isNationLocked ? (
-             /* Post-lock: sandbox (+ local vs national) */
+             /* Post-lock: Simulator Mode */
              selectedDistrictId !== null ? (
                <LocalDistrictSandbox />
              ) : (
-               <div className="bg-white p-6 rounded shadow border">
+               <div className="bg-white p-6 rounded-lg shadow-sm border">
                  <SimulationControls />
                </div>
              )
           ) : (
-             /* Pre-lock: Builder mode */
-             <>
-               <AxesConfig /> 
-               <DemographicsConfig />
-               <div className="bg-white p-6 rounded shadow border">
-                 <DistrictInspector />
+             /* Pre-lock: Builder Mode */
+             <div className="bg-white rounded-lg shadow-sm border overflow-hidden flex flex-col">
+               
+               {/* Tab Navigation */}
+               <div className="flex bg-gray-100 border-b">
+                 <button 
+                   onClick={() => setBuilderTab('axes')}
+                   className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-colors ${
+                     builderTab === 'axes' ? 'bg-white text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 hover:bg-gray-200'
+                   }`}
+                 >
+                   Positions
+                 </button>
+                 <button 
+                   onClick={() => setBuilderTab('voters')}
+                   className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-colors ${
+                     builderTab === 'voters' ? 'bg-white text-emerald-600 border-b-2 border-emerald-600' : 'text-gray-500 hover:bg-gray-200'
+                   }`}
+                 >
+                   Voters
+                 </button>
+                 <button 
+                   onClick={() => setBuilderTab('districts')}
+                   className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-colors ${
+                     builderTab === 'districts' ? 'bg-white text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:bg-gray-200'
+                   }`}
+                 >
+                   District
+                 </button>
                </div>
-             </>
+
+               {/* Tab Content Area */}
+               <div className="p-6">
+                 {builderTab === 'axes' && <AxesConfig />}
+                 {builderTab === 'voters' && <DemographicsConfig />}
+                 {builderTab === 'districts' && <DistrictInspector />}
+               </div>
+               
+             </div>
           )}
 
         </div>

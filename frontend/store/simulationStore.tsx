@@ -127,9 +127,8 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
 
     // Profiles and parties
     demographicProfiles: [ // default
-        { id: "URBAN", name: "Urban Progressive", color: "#a855f7", populationPerTile: 5000, positions: { Economy: -0.7, Social: -0.7 } },
-        { id: "SUBURBAN", name: "Suburban Moderate", color: "#06b6d4", populationPerTile: 2500, positions: { Economy: 0.1, Social: -0.1 } },
-        { id: "RURAL", name: "Rural Conservative", color: "#f97316", populationPerTile: 1000, positions: { Economy: 0.7, Social: 0.6 } }
+        { id: "URBAN", name: "Urban Progressive", color: "#63a31a", populationPerTile: 5000, positions: { Economy: -0.7, Social: -0.7 } },
+        { id: "RURAL", name: "Rural Conservative", color: "#012169", populationPerTile: 1000, positions: { Economy: 0.7, Social: 0.6 } }
     ] as DemographicProfile[],
     
     addDemographicProfile: (profile) => set((state) => ({ demographicProfiles: [...state.demographicProfiles, profile] })),
