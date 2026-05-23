@@ -2,58 +2,85 @@
 
 import { useSimulationStore } from '@/store/simulationStore';
 
-// A simple distinct color palette for our dynamic districts
-const PALETTE = [
-  "bg-blue-500", "bg-red-500", "bg-green-500", 
-  "bg-purple-500", "bg-yellow-500", "bg-pink-500", "bg-indigo-500"
+// Districts in muted colours
+const DISTRICT_PALETTE = [
+  "bg-slate-400", "bg-mist-400", "bg-zinc-400", 
+  "bg-mauve-400", "bg-olive-400"
 ];
 
 export default function MapGrid() {
-  const { grid, districts, updateTileDistrict, activeBrush, isNationLocked } = useSimulationStore();
+  const { 
+    grid, 
+    districts, 
+    demographicProfiles,
+    updateTileDistrict, 
+    updateTileDemographic,
+    activeBrush, 
+    activeDemographicBrush,
+    brushMode,
+    isNationLocked 
+  } = useSimulationStore();
 
   // Helper to figure out what color a tile should be
-  const getTileColor = (districtId: string | null) => {
-    if (!districtId) return "bg-gray-200"; // Unassigned land
-    
-    const index = districts.findIndex(d => d.id === districtId);
-    if (index === -1) return "bg-gray-200"; // Fallback if district deleted
-    
-    return PALETTE[index % PALETTE.length];
+  const getTileStyle = (tile: any) => {
+    // When locked, show clean map background
+    if (isNationLocked) {
+      if (!tile.district_id) return { className: "bg-gray-100 opacity-40" };
+      const idx = districts.findIndex(d => d.id === tile.district_id);
+      return { className: `${DISTRICT_PALETTE[idx % DISTRICT_PALETTE.length]} opacity-50` };
+    }
+
+    // Context-dependent colouring
+    if (brushMode === "district") {
+      if (!tile.district_id) return { className: "bg-gray-200" };
+      const idx = districts.findIndex(d => d.id === tile.district_id);
+      return { className: idx === -1 ? "bg-gray-200" : DISTRICT_PALETTE[idx % DISTRICT_PALETTE.length] };
+    } else {
+      // Use explicit hex codes from the profile
+      const profile = demographicProfiles.find(p => p.id === tile.demographicProfileId);
+      return { 
+        className: "", 
+        style: { backgroundColor: profile ? profile.color : "#e5e7eb" } 
+      };
+    }
   };
 
   const handleTileClick = (tileId: number) => {
-    // Prevent painting if the nation is locked!
     if (isNationLocked) return;
-    updateTileDistrict(tileId, activeBrush);
+    
+    if (brushMode === "district") {
+      updateTileDistrict(tileId, activeBrush);
+    } else {
+      updateTileDemographic(tileId, activeDemographicBrush);
+    }
   };
 
   return (
     <div className="flex flex-col items-center">
       <div 
-        className={`grid grid-cols-10 gap-1 p-2 bg-gray-100 border-4 rounded-lg shadow-inner w-fit ${
-          isNationLocked ? "border-gray-400 cursor-default" : "border-blue-300 cursor-pointer"
+        className={`grid grid-cols-10 gap-1 p-2 bg-gray-50 border-4 rounded-lg shadow-inner w-fit ${
+          isNationLocked ? "border-gray-300 cursor-default" : "border-purple-300 cursor-pointer"
         }`}
       >
-        {grid.map((tile) => (
-          <div
-            key={tile.id}
-            onMouseDown={() => handleTileClick(tile.id)}
-            onMouseEnter={(e) => {
-              // Enable drag-to-paint (if left mouse button is held down)
-              if (e.buttons === 1) handleTileClick(tile.id);
-            }}
-            className={`w-10 h-10 md:w-12 md:h-12 rounded-sm transition-colors duration-150 ${getTileColor(tile.district_id)} ${
-              !isNationLocked && "hover:brightness-90"
-            }`}
-          />
-        ))}
+        {grid.map((tile) => {
+          const visualProps = getTileStyle(tile);
+          return (
+            <div
+              key={tile.id}
+              onMouseDown={() => handleTileClick(tile.id)}
+              onMouseEnter={(e) => { if (e.buttons === 1) handleTileClick(tile.id); }}
+              className={`w-10 h-10 md:w-12 md:h-12 rounded-sm transition-all duration-150 border border-black/5 ${visualProps.className} ${
+                !isNationLocked && "hover:scale-95 hover:brightness-95"
+              }`}
+              style={visualProps.style}
+            />
+          );
+        })}
       </div>
-      
-      {/* Small status indicator */}
-      <div className="mt-4 text-sm text-gray-500 font-medium">
+      <div className="mt-4 text-xs text-gray-500 font-semibold uppercase tracking-wider">
         {isNationLocked 
-          ? "Geography Locked. Map is in View-Only mode." 
-          : "Click and drag to paint districts."}
+          ? "Map Locked (View Mode)" 
+          : `Active Canvas: Editing ${brushMode === "district" ? "District Borders" : "Demographics"}`}
       </div>
     </div>
   );
