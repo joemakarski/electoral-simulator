@@ -10,48 +10,46 @@ const DISTRICT_PALETTE = [
 
 export default function MapGrid() {
   const { 
-    grid, 
-    districts, 
-    demographicProfiles,
+    grid, districts, 
     updateTileDistrict, 
-    updateTileDemographic,
     activeBrush, 
-    activeDemographicBrush,
     brushMode,
-    isNationLocked 
+    isNationLocked,
+    selectedDistrictId, setSelectedDistrictId 
   } = useSimulationStore();
 
-  // Helper to figure out what color a tile should be
-  const getTileStyle = (tile: any) => {
-    // When locked, show clean map background
-    if (isNationLocked) {
-      if (!tile.district_id) return { className: "bg-gray-100 opacity-40" };
-      const idx = districts.findIndex(d => d.id === tile.district_id);
-      return { className: `${DISTRICT_PALETTE[idx % DISTRICT_PALETTE.length]} opacity-50` };
+  const getTileStyleAndClass = (tile: any) => {
+    if (!tile.district_id) return { className: "bg-gray-100", style: {} };
+    
+    const idx = districts.findIndex(d => d.id === tile.district_id);
+    const baseColorClass = idx === -1 ? "bg-gray-200" : DISTRICT_PALETTE[idx % DISTRICT_PALETTE.length];
+
+    // Highlight logic for "Inspect" mode
+    if (brushMode === "inspect" || isNationLocked) {
+      if (selectedDistrictId) {
+        // If a district is selected, highlight it and dim the rest
+        if (tile.district_id === selectedDistrictId) {
+          return { className: `${baseColorClass} shadow-inner scale-95 ring-2 ring-black/20 z-10`, style: {} };
+        } else {
+          return { className: `${baseColorClass} opacity-30 grayscale-[50%]`, style: {} };
+        }
+      }
     }
 
-    // Context-dependent colouring
-    if (brushMode === "district") {
-      if (!tile.district_id) return { className: "bg-gray-200" };
-      const idx = districts.findIndex(d => d.id === tile.district_id);
-      return { className: idx === -1 ? "bg-gray-200" : DISTRICT_PALETTE[idx % DISTRICT_PALETTE.length] };
-    } else {
-      // Use explicit hex codes from the profile
-      const profile = demographicProfiles.find(p => p.id === tile.demographicProfileId);
-      return { 
-        className: "", 
-        style: { backgroundColor: profile ? profile.color : "#e5e7eb" } 
-      };
-    }
+    // Default colorful map
+    return { className: baseColorClass, style: {} };
   };
 
   const handleTileClick = (tileId: number) => {
     if (isNationLocked) return;
     
+    const tile = grid.find(t => t.id === tileId);
+    
     if (brushMode === "district") {
       updateTileDistrict(tileId, activeBrush);
-    } else {
-      updateTileDemographic(tileId, activeDemographicBrush);
+    } else if (brushMode === "inspect") {
+      // In inspect mode, clicking a tile selects its district
+      setSelectedDistrictId(tile?.district_id || null);
     }
   };
 
@@ -59,18 +57,21 @@ export default function MapGrid() {
     <div className="flex flex-col items-center">
       <div 
         className={`grid grid-cols-10 gap-1 p-2 bg-gray-50 border-4 rounded-lg shadow-inner w-fit ${
-          isNationLocked ? "border-gray-300 cursor-default" : "border-purple-300 cursor-pointer"
+          isNationLocked ? "border-gray-300" : "border-indigo-300"
         }`}
       >
         {grid.map((tile) => {
-          const visualProps = getTileStyle(tile);
+          const visualProps = getTileStyleAndClass(tile);
           return (
             <div
               key={tile.id}
               onMouseDown={() => handleTileClick(tile.id)}
-              onMouseEnter={(e) => { if (e.buttons === 1) handleTileClick(tile.id); }}
-              className={`w-10 h-10 md:w-12 md:h-12 rounded-sm transition-all duration-150 border border-black/5 ${visualProps.className} ${
-                !isNationLocked && "hover:scale-95 hover:brightness-95"
+              onMouseEnter={(e) => { 
+                // Only allow drag-to-paint in district mode
+                if (e.buttons === 1 && brushMode === "district") handleTileClick(tile.id); 
+              }}
+              className={`w-10 h-10 md:w-12 md:h-12 rounded-sm transition-all duration-300 border border-black/5 ${visualProps.className} ${
+                brushMode === "inspect" ? "cursor-pointer hover:scale-95" : "cursor-crosshair hover:brightness-90"
               }`}
               style={visualProps.style}
             />
@@ -79,8 +80,8 @@ export default function MapGrid() {
       </div>
       <div className="mt-4 text-xs text-gray-500 font-semibold uppercase tracking-wider">
         {isNationLocked 
-          ? "Map Locked (View Mode)" 
-          : `Active Canvas: Editing ${brushMode === "district" ? "District Borders" : "Demographics"}`}
+          ? "Map Locked (View Results)" 
+          : `Active Mode: ${brushMode === "district" ? "Drawing Borders" : "Inspecting Districts"}`}
       </div>
     </div>
   );

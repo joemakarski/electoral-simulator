@@ -48,25 +48,27 @@ export default function SimulationControls() {
     generateCandidates();
     const latestCandidates = useSimulationStore.getState().candidates;
 
-    // Filter out unassigned tiles
-    const activeTiles = grid.filter(t => t.district_id !== null);
-
     // Convert Tiles into VoterBlocks
-    const generatedVoters = activeTiles.map(tile => {
-        // Find the custom painted demographic archetype for this specific tile
-        const profile = demographicProfiles.find(p => p.id === tile.demographicProfileId);
-        
-        // Safety fallback if a profile was missing
-        const defaultPositions = axes.reduce((acc, axis) => ({ ...acc, [axis]: 0.0 }), {});
-        const finalPositions = profile ? { ...profile.positions } : defaultPositions;
-        const finalPopulation = profile ? profile.populationPerTile : 1000;
+    // Convert Districts into VoterBlocks
+    const generatedVoters = districts.map(district => {
+      // Find the demographic assigned to this district
+      const profile = demographicProfiles.find(p => p.id === district.demographicProfileId);
+      
+      // Calculate population based on how many tiles were painted
+      const paintedTiles = grid.filter(t => t.district_id === district.id).length;
+      const basePopPerTile = profile ? profile.populationPerTile : 1000;
+      const finalPopulation = paintedTiles * basePopPerTile;
+      
+      // Safety fallback if a profile was missing
+      const defaultPositions = axes.reduce((acc, axis) => ({ ...acc, [axis]: 0.0 }), {});
+      const finalPositions = profile ? { ...profile.positions } : defaultPositions;
 
-        return {
-            population: finalPopulation,
-            positions: finalPositions, // Pulls perfectly from whatever axes are initialized!
-            district_id: tile.district_id
-        };
-    });
+      return {
+        population: finalPopulation,
+        positions: finalPositions, 
+        district_id: district.id
+      };
+    }).filter(v => v.population > 0); // Send non-empty districts only
 
     const payload = {
       system: activeSystem,

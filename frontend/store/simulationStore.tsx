@@ -14,7 +14,8 @@ export type District = {
     id: string;
     name: string;
     num_seats: number;
-};
+    demographicProfileId: string;
+};  
 export type Party = {
   id: string;
   name: string;
@@ -41,11 +42,14 @@ interface SimulationState {
     grid: Tile[];
     setGrid: (grid: Tile[]) => void;
     updateTileDistrict: (tileId: number, districtId: string | null) => void
-    updateTileDemographic: (tileId: number, profileId: string | null) => void;
 
     districts: District[];
     addDistrict: (district: District) => void;
     removeDistrict: (districtId: string) => void;
+    updateDistrict: (districtId: string, updates: Partial<District>) => void
+
+    selectedDistrictId: string | null;
+    setSelectedDistrictId: (id: string | null) => void;
 
     isNationLocked: boolean;
     setNationLocked: (locked: boolean) => void;
@@ -56,16 +60,13 @@ interface SimulationState {
     activeBrush: string | null;
     setActiveBrush: (brush: string | null) => void;
 
-    brushMode: "district" | "demographic"; // Toggle what the mouse paints
-    setBrushMode: (mode: "district" | "demographic") => void;
+    brushMode: "district" | "demographic" | "inspect"; // Toggle what the mouse paints
+    setBrushMode: (mode: "district" | "demographic" | "inspect") => void;
 
     demographicProfiles: DemographicProfile[];
     addDemographicProfile: (profile: DemographicProfile) => void;
     removeDemographicProfile: (profileId: string) => void;
     updateDemographicPosition: (profileId: string, axis: string, value: number) => void;
-
-    activeDemographicBrush: string | null;
-    setActiveDemographicBrush: (profileId: string | null) => void;
 
     results: any; //TODO: SPECIFY
     setResults: (results: any) => void;    
@@ -97,17 +98,18 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     updateTileDistrict: (tileId, districtId) => set((state) => ({
         grid: state.grid.map(t => t.id===tileId ? { ...t, district_id: districtId } : t)
     })),
-    updateTileDemographic: (tileId, profileId) => set((state) => {
-        const profile = state.demographicProfiles.find(p => p.id===profileId);
-        const pop = profile ? profile.populationPerTile : 1000;
-        return {
-            grid: state.grid.map(t => t.id === tileId ? { ...t, demographicProfileId: profileId, population: pop } : t)
-        };
-    }),
     
     districts: [], // initially empty
     addDistrict: (district) => set((state) => ({ districts: [...state.districts, district]})),
     removeDistrict: (id) => set((state) => ({ districts: state.districts.filter(d => d.id!=id)})),
+    updateDistrict: (districtId, updates) => set((state) => ({
+        districts: state.districts.map(d =>
+            d.id===districtId ? { ...d, ...updates } : d
+        )
+    })),
+
+    selectedDistrictId: null,
+    setSelectedDistrictId: (id) => set({ selectedDistrictId: id }),
 
     isNationLocked: false,
     setNationLocked: (locked) => set({isNationLocked: locked}),
@@ -121,9 +123,6 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     brushMode: "district",
     setBrushMode: (mode) => set({ brushMode: mode }),
     
-    activeDemographicBrush: "URBAN",
-    setActiveDemographicBrush: (profileId) => set({ activeDemographicBrush: profileId }),
-
     demographicProfiles: [
         { id: "URBAN", name: "Urban Progressive", color: "#a855f7", populationPerTile: 5000, positions: { Economy: -0.7, Social: -0.7 } },
         { id: "SUBURBAN", name: "Suburban Moderate", color: "#06b6d4", populationPerTile: 2500, positions: { Economy: 0.1, Social: -0.1 } },
@@ -167,7 +166,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     })),
 
     candidates: [],
-    generateCandidates: () => { // For now, 1 national + 1 per district
+    generateCandidates: () => {
         const { parties, districts } = get();
         const newCandidates: Candidate[] = [];
 
