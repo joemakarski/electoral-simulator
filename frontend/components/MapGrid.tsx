@@ -2,86 +2,125 @@
 
 import { useSimulationStore } from '@/store/simulationStore';
 
-// Districts in muted colours
-const DISTRICT_PALETTE = [
-  "bg-slate-400", "bg-mist-400", "bg-zinc-400", 
-  "bg-mauve-400", "bg-olive-400"
-];
-
 export default function MapGrid() {
   const { 
-    grid, districts, 
-    updateTileDistrict, 
-    activeBrush, 
-    brushMode,
+    grid, 
+    parties,
+    candidates,
     isNationLocked,
-    selectedDistrictId, setSelectedDistrictId 
+    selectedDistrictId, 
+    setSelectedDistrictId,
+    toggleTileActive,
+    results
   } = useSimulationStore();
 
-  const getTileStyleAndClass = (tile: any) => {
-    if (!tile.district_id) return { className: "bg-gray-100", style: {} };
-    
-    const idx = districts.findIndex(d => d.id === tile.district_id);
-    const baseColorClass = idx === -1 ? "bg-gray-200" : DISTRICT_PALETTE[idx % DISTRICT_PALETTE.length];
+  // Helper to determine the classes and inline styles for each individual tile
+  const getTileProps = (tile: any) => {
+    // Inactive land is always an empty box
+    if (!tile.isActive) {
+      return { 
+        className: "bg-gray-100 text-gray-300 border-dashed border-gray-200 cursor-pointer hover:bg-gray-200/50", 
+        style: {},
+        content: "" 
+      };
+    }
 
-    // Highlight logic for "Inspect" mode
-    if (brushMode === "inspect" || isNationLocked) {
-      if (selectedDistrictId) {
-        // If a district is selected, highlight it and dim the rest
-        if (tile.district_id === selectedDistrictId) {
-          return { className: `${baseColorClass} shadow-inner scale-95 ring-2 ring-black/20 z-10`, style: {} };
-        } else {
-          return { className: `${baseColorClass} opacity-30 grayscale-[50%]`, style: {} };
+    const isSelected = selectedDistrictId === tile.id;
+    const hasSelection = selectedDistrictId !== null;
+
+    // If an election has run, paint using winning party colors
+    if (results && results.winners) {
+      const districtKey = `d${tile.id}`;
+      const winnersList = results.winners[districtKey] as string[] | undefined;
+      
+      if (winnersList && winnersList.length > 0) {
+        const primaryWinnerId = winnersList[0];
+        const winnerMeta = candidates.find(c => c.id === primaryWinnerId);
+        const winningParty = parties.find(p => p.id === winnerMeta?.party_id);
+
+        if (winningParty) {
+          let stateClass = "text-white font-black drop-shadow shadow-md";
+          if (isSelected) stateClass += " ring-4 ring-black/50 scale-95 z-10";
+          else if (hasSelection) stateClass += " opacity-25 grayscale-[40%] scale-95";
+
+          return {
+            className: stateClass,
+            style: { backgroundColor: winningParty.color },
+            content: tile.num_seats
+          };
         }
       }
     }
 
-    // Default colorful map
-    return { className: baseColorClass, style: {} };
+    // Before simulation, show standard active district styling
+    let baseClass = "bg-taupe-400 text-white font-bold shadow-md transition-all";
+    if (isSelected) {
+      baseClass += " ring-4 ring-black/40 scale-95 z-10";
+    } else if (hasSelection) {
+      baseClass += " opacity-25 scale-95 grayscale-[20%]";
+    }
+
+    return { 
+      className: baseClass, 
+      style: {},
+      content: tile.num_seats // Displaying the number of seats inside the hex cell looks like a true cartogram
+    };
   };
 
+  // Click Handler changes behavior natively based on the simulation phase
   const handleTileClick = (tileId: number) => {
-    if (isNationLocked) return;
-    
     const tile = grid.find(t => t.id === tileId);
-    
-    if (brushMode === "district") {
-      updateTileDistrict(tileId, activeBrush);
-    } else if (brushMode === "inspect") {
-      // In inspect mode, clicking a tile selects its district
-      setSelectedDistrictId(tile?.district_id || null);
+    if (!tile) return;
+
+    if (!isNationLocked) {
+      // Pre-lock: Creating and selecting
+      if (!tile.isActive) {
+        toggleTileActive(tileId); // Turn it on
+        setSelectedDistrictId(tileId); // Auto-select it for editing
+      } else {
+        // If already active, just select it
+        setSelectedDistrictId(tileId);
+      }
+    } else {
+      // Post-lock: inspect active districts
+      if (tile.isActive) {
+        setSelectedDistrictId(selectedDistrictId === tileId ? null : tileId);
+      }
     }
   };
 
   return (
     <div className="flex flex-col items-center">
       <div 
-        className={`grid grid-cols-10 gap-1 p-2 bg-gray-50 border-4 rounded-lg shadow-inner w-fit ${
-          isNationLocked ? "border-gray-300" : "border-indigo-300"
+        className={`grid grid-cols-10 gap-1.5 p-3 bg-gray-50 border-4 rounded-xl shadow-inner w-fit select-none ${
+          isNationLocked ? "border-gray-300" : "border-taupe-400 animate-pulse-subtle"
         }`}
       >
         {grid.map((tile) => {
-          const visualProps = getTileStyleAndClass(tile);
+          const props = getTileProps(tile);
           return (
             <div
               key={tile.id}
-              onMouseDown={() => handleTileClick(tile.id)}
-              onMouseEnter={(e) => { 
-                // Only allow drag-to-paint in district mode
-                if (e.buttons === 1 && brushMode === "district") handleTileClick(tile.id); 
-              }}
-              className={`w-10 h-10 md:w-12 md:h-12 rounded-sm transition-all duration-300 border border-black/5 ${visualProps.className} ${
-                brushMode === "inspect" ? "cursor-pointer hover:scale-95" : "cursor-crosshair hover:brightness-90"
-              }`}
-              style={visualProps.style}
-            />
+              onClick={() => handleTileClick(tile.id)}
+              className={`w-10 h-10 md:w-12 md:h-12 rounded-lg border border-black/5 flex items-center justify-center text-sm transition-all duration-200 ${props.className}`}
+              style={props.style}
+              title={tile.isActive ? `${tile.name} (${tile.num_seats} seats)` : "Empty Land"}
+            >
+              {props.content}
+            </div>
           );
         })}
       </div>
-      <div className="mt-4 text-xs text-gray-500 font-semibold uppercase tracking-wider">
-        {isNationLocked 
-          ? "Map Locked (View Results)" 
-          : `Active Mode: ${brushMode === "district" ? "Drawing Borders" : "Inspecting Districts"}`}
+      
+      {/* Contextual status */}
+      <div className="mt-4 text-xs text-gray-500 font-bold uppercase tracking-wider bg-white px-3 py-1.5 rounded-full border shadow-sm">
+        {!isNationLocked ? (
+          <span className="text-indigo-600">Click tiles to select districts</span>
+        ) : selectedDistrictId !== null ? (
+          <span className="text-amber-600">Inspecting District {selectedDistrictId + 1}</span>
+        ) : (
+          <span className="text-emerald-600">Click an active district to inspect</span>
+        )}
       </div>
     </div>
   );

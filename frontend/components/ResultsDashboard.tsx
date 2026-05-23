@@ -3,7 +3,7 @@
 import { useSimulationStore } from '@/store/simulationStore';
 
 export default function ResultsDashboard() {
-  const { results, candidates, districts, parties } = useSimulationStore();
+  const { results, candidates, grid, parties } = useSimulationStore();
 
   // If there are no results yet, don't render anything
   if (!results) return null;
@@ -11,7 +11,9 @@ export default function ResultsDashboard() {
   // 1. Data lookups as objects
   const partyMetaLookup = Object.fromEntries(parties.map(p => [p.id, { name: p.name, color: p.color }]));
   const candidateLookup = Object.fromEntries(candidates.map(c => [c.id, { name: c.name, party_id: c.party_id }]));
-  const districtLookup = Object.fromEntries(districts.map(d => [d.id, d.name]));
+  const districtLookup = Object.fromEntries(
+    grid.filter(t => t.isActive).map(t => [`d${t.id}`, t.name])
+  );
   districtLookup["NATIONAL_LIST"] = "National Top-Up List";
 
   // 2. Tally seats by party

@@ -6,7 +6,6 @@ import { useSimulationStore } from "@/store/simulationStore";
 export default function SimulationControls() {
   const { 
     grid, 
-    districts, 
     axes,
     parties,
     addParty,
@@ -48,36 +47,38 @@ export default function SimulationControls() {
     generateCandidates();
     const latestCandidates = useSimulationStore.getState().candidates;
 
-    // Convert Tiles into VoterBlocks
-    // Convert Districts into VoterBlocks
-    const generatedVoters = districts.map(district => {
-      // Find the demographic assigned to this district
-      const profile = demographicProfiles.find(p => p.id === district.demographicProfileId);
+    // Get all active tiles (our districts)
+    const activeDistricts = grid.filter(t => t.isActive);
+
+    // Format districts for Django
+    const payloadDistricts = activeDistricts.map(t => ({
+        id: `d${t.id}`,
+        name: t.name,
+        num_seats: t.num_seats
+    }));
+
+    // Format voters for Django
+    const generatedVoters = activeDistricts.map(tile => {
+      const profile = demographicProfiles.find(p => p.id === tile.demographicProfileId);
       
-      // Calculate population based on how many tiles were painted
-      const paintedTiles = grid.filter(t => t.district_id === district.id).length;
-      const basePopPerTile = profile ? profile.populationPerTile : 1000;
-      const finalPopulation = paintedTiles * basePopPerTile;
-      
-      // Safety fallback if a profile was missing
       const defaultPositions = axes.reduce((acc, axis) => ({ ...acc, [axis]: 0.0 }), {});
       const finalPositions = profile ? { ...profile.positions } : defaultPositions;
+      const finalPopulation = profile ? profile.populationPerTile : 1000;
 
       return {
         population: finalPopulation,
         positions: finalPositions, 
-        district_id: district.id
+        district_id: `d${tile.id}`
       };
-    }).filter(v => v.population > 0); // Send non-empty districts only
+    });
 
     const payload = {
       system: activeSystem,
-      districts: districts,
+      districts: payloadDistricts,
       candidates: latestCandidates,
       voters: generatedVoters,
     };
 
-    // Simulate on backend
     try {
       const response = await fetch("http://localhost:8000/api/simulate/", {
           method: "POST",
@@ -145,18 +146,18 @@ export default function SimulationControls() {
 
 
         {/* PARTY LIST */}
-        <div className="flex flex-col gap-4 max-h-[400px] overflow-y-auto pr-2">
+        <div className="flex flex-col gap-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
           {parties.length === 0 && <p className="text-sm text-gray-500 italic">No parties created.</p>}
           
           {parties.map((party) => (
-            <div key={party.id} className="bg-gray-50 p-4 rounded-lg border shadow-sm relative" style={{ borderLeft: `6px solid ${party.color}` }}>
+            <div key={party.id} className="bg-white p-4 rounded-lg border shadow-sm relative shrink-0" style={{ borderLeft: `6px solid ${party.color}` }}>
               
               {/* Delete Button */}
               <button
                 onClick={() => removeParty(party.id)}
                 className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center 
                           text-gray-400 hover:text-red-500 font-bold text-xl 
-                          rounded-full hover:bg-gray-200 transition"
+                          rounded-full hover:bg-gray-100 transition"
                 title="Delete Party"
               >
                 ✕
@@ -175,7 +176,7 @@ export default function SimulationControls() {
                       type="range" min="-1" max="1" step="0.05" 
                       value={party.basePositions[axis] || 0}
                       onChange={(e) => updatePartyPosition(party.id, axis, parseFloat(e.target.value))}
-                      className="w-full accent-gray-700"
+                      className="w-full accent-gray-700 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
                 ))}
@@ -185,14 +186,14 @@ export default function SimulationControls() {
         </div>
       </div>
 
-      {/* 3. Execution */}
+      {/* Execution */}
       <div className="mt-4 flex gap-2">
         <button 
           onClick={() => {
             setNationLocked(false);
             setResults(null);
           }}
-          className="bg-gray-200 text-gray-700 px-4 py-3 rounded-lg font-bold hover:bg-gray-300"
+          className="bg-gray-200 text-gray-700 px-4 py-3 rounded-lg font-bold hover:bg-gray-300 transition-colors"
         >
           Unlock Map
         </button>
@@ -200,7 +201,7 @@ export default function SimulationControls() {
         <button 
           onClick={runSimulation}
           disabled={loading || parties.length === 0}
-          className="flex-1 bg-green-600 text-white p-3 rounded-lg font-bold text-lg hover:bg-green-700 disabled:bg-gray-400 shadow-md"
+          className="flex-1 bg-green-600 text-white p-3 rounded-lg font-bold text-lg hover:bg-green-700 disabled:bg-gray-400 shadow-md transition-colors"
         >
           {loading ? "Calculating..." : "Run Election"}
         </button>

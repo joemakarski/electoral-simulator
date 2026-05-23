@@ -2,9 +2,10 @@
 
 import { useSimulationStore } from '@/store/simulationStore';
 import MapGrid from '@/components/MapGrid'; 
-import BuilderControls from '@/components/BuilderControls';
+import BuilderControls from '@/components/DistrictInspector';
 import SimulationControls from '@/components/SimulationControls';
 import ResultsDashboard from '@/components/ResultsDashboard';
+import AxesConfig from '@/components/AxesConfig';
 
 export default function Home() {
   const { isNationLocked } = useSimulationStore();
@@ -34,8 +35,12 @@ export default function Home() {
                <SimulationControls />
              </div>
           ) : (
-             <div className="bg-white p-6 rounded shadow border">
-               <BuilderControls/>
+             <div className="flex flex-col">
+               <AxesConfig /> 
+               
+               <div className="bg-white p-6 rounded shadow border">
+                 <BuilderControls/>
+               </div>
              </div>
           )}
         </div>
