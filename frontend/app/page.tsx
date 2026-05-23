@@ -2,13 +2,15 @@
 
 import { useSimulationStore } from '@/store/simulationStore';
 import MapGrid from '@/components/MapGrid'; 
-import BuilderControls from '@/components/DistrictInspector';
+import DistrictInspector from '@/components/DistrictInspector';
 import SimulationControls from '@/components/SimulationControls';
 import ResultsDashboard from '@/components/ResultsDashboard';
 import AxesConfig from '@/components/AxesConfig';
+import DemographicsConfig from '@/components/DemographicsConfig';
+import LocalDistrictSandbox from '@/components/LocalDistrictSandbox';
 
 export default function Home() {
-  const { isNationLocked } = useSimulationStore();
+  const { isNationLocked, selectedDistrictId } = useSimulationStore();
 
   return (
     <div className="min-h-screen bg-gray-50 p-8 text-black">
@@ -17,7 +19,7 @@ export default function Home() {
         {/* Left/Center Column: The Map */}
         <div className="col-span-2">
           <h1 className="text-3xl font-bold mb-4">
-            {isNationLocked ? "Electoral Dashboard" : "Nation Builder"}
+            {isNationLocked ? "Electoral Sandbox" : "Nation Builder"}
           </h1>
           
           <div className="bg-white p-6 rounded-lg shadow-md border flex justify-center">
@@ -25,24 +27,31 @@ export default function Home() {
           </div>
 
           <ResultsDashboard />
-          
         </div>
 
-        {/* Right Column: The Controls */}
-        <div className="col-span-1">
+        {/* Right Column: Dynamic Routing */}
+        <div className="col-span-1 flex flex-col gap-6">
+          
           {isNationLocked ? (
-             <div className="bg-white p-6 rounded shadow border">
-               <SimulationControls />
-             </div>
-          ) : (
-             <div className="flex flex-col">
-               <AxesConfig /> 
-               
+             /* Post-lock: sandbox (+ local vs national) */
+             selectedDistrictId !== null ? (
+               <LocalDistrictSandbox />
+             ) : (
                <div className="bg-white p-6 rounded shadow border">
-                 <BuilderControls/>
+                 <SimulationControls />
                </div>
-             </div>
+             )
+          ) : (
+             /* Pre-lock: Builder mode */
+             <>
+               <AxesConfig /> 
+               <DemographicsConfig />
+               <div className="bg-white p-6 rounded shadow border">
+                 <DistrictInspector />
+               </div>
+             </>
           )}
+
         </div>
 
       </div>
