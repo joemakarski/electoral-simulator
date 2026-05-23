@@ -9,12 +9,18 @@ export default function BuilderControls() {
     districts, addDistrict, removeDistrict, setNationLocked,
     activeBrush, setActiveBrush,
     brushMode, setBrushMode,
-    demographicProfiles, activeDemographicBrush, setActiveDemographicBrush
+    demographicProfiles, activeDemographicBrush, setActiveDemographicBrush,
+    addDemographicProfile, removeDemographicProfile, updateDemographicPosition, axes
   } = useSimulationStore();
 
   // Local consts for local forms
   const [newDistrictName, setNewDistrictName] = useState("");
   const [newDistrictSeats, setNewDistrictSeats] = useState<number>(1);
+  
+  // Local consts for Demographic form
+  const [newProfileName, setNewProfileName] = useState("");
+  const [newProfileColor, setNewProfileColor] = useState("#10b981");
+  const [newProfilePop, setNewProfilePop] = useState<number>(1000);
 
 
   // HANDLERS
@@ -27,6 +33,24 @@ export default function BuilderControls() {
     setNewDistrictName("");
     setNewDistrictSeats(1);
     if (!activeBrush) setActiveBrush(newId);
+  };
+
+  const handleAddProfile = () => {
+    if (!newProfileName.trim()) return;
+    
+    const defaultPositions = axes.reduce((acc, axis) => ({ ...acc, [axis]: 0.0 }), {});
+    const newId = `demo_${Date.now()}`;
+    
+    addDemographicProfile({
+      id: newId,
+      name: newProfileName,
+      color: newProfileColor,
+      populationPerTile: newProfilePop,
+      positions: defaultPositions
+    });
+    
+    setNewProfileName("");
+    if (!activeDemographicBrush) setActiveDemographicBrush(newId);
   };
 
   const handleLockNation = () => {
@@ -94,7 +118,7 @@ export default function BuilderControls() {
                   >
                     {d.name} ({d.num_seats} {d.num_seats === 1 ? 'seat' : 'seats'})
                   </button>
-                  <button onClick={() => removeDistrict(d.id)} className="px-3 bg-red-50 text-red-600 border rounded hover:bg-red-100 font-bold">X</button>
+                  <button onClick={() => removeDistrict(d.id)} className="px-3 bg-red-50 text-red-600 border rounded hover:bg-red-100 font-bold">✕</button>
                 </div>
               ))}
             </div>
@@ -103,25 +127,80 @@ export default function BuilderControls() {
       ) : (
         /* Demographics Paint Sub-Panel */
         <div className="flex flex-col gap-5 animate-fade-in">
+          
+          {/* Create Demographic Form */}
           <div>
-            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Select Demographic Archetype</h3>
-            <div className="flex flex-col gap-2">
+            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Create Voter Profile</h3>
+            <div className="bg-gray-50 p-4 rounded-lg border shadow-sm flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <input 
+                  type="color" value={newProfileColor} onChange={(e) => setNewProfileColor(e.target.value)}
+                  className="w-10 h-10 p-1 border border-gray-300 rounded cursor-pointer shrink-0" title="Profile Color"
+                />
+                <input 
+                  type="text" placeholder="Profile Name (e.g. Farmers)" value={newProfileName}
+                  onChange={(e) => setNewProfileName(e.target.value)} className="flex-1 p-2 border rounded outline-none"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-gray-600 shrink-0">Pop. per tile:</span>
+                <input 
+                  type="number" min="100" step="100" value={newProfilePop}
+                  onChange={(e) => setNewProfilePop(parseInt(e.target.value) || 1000)} className="p-2 border rounded w-24 bg-white"
+                />
+                <button onClick={handleAddProfile} className="flex-1 bg-purple-600 text-white py-2 rounded font-bold hover:bg-purple-700">Add</button>
+              </div>
+            </div>
+          </div>
+
+          {/* Demographic Brush Palette & Editor */}
+          <div className="mt-2"> 
+            
+            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Select & Edit Profiles</h3>
+            
+            <div className="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-2 pb-4 custom-scrollbar">
               {demographicProfiles.map((p) => (
-                <button
+                <div
                   key={p.id}
-                  onClick={() => setActiveDemographicBrush(p.id)}
-                  className="p-4 rounded-lg border text-left flex items-center justify-between font-bold shadow-sm transition-all hover:translate-x-1"
+                  className="shrink-0 rounded-lg border shadow-sm transition-all bg-white relative overflow-hidden"
                   style={{ 
                     borderLeft: activeDemographicBrush === p.id ? `8px solid ${p.color}` : `4px solid ${p.color}`,
-                    backgroundColor: activeDemographicBrush === p.id ? "#f3f4f6" : "#ffffff"
+                    borderColor: activeDemographicBrush === p.id ? p.color : '#e5e7eb'
                   }}
                 >
-                  <div>
-                    <div className="text-gray-800">{p.name}</div>
-                    <div className="text-xs text-gray-400 font-normal">Base Pop: {p.populationPerTile.toLocaleString()} per tile</div>
+                  <div 
+                    onClick={() => setActiveDemographicBrush(p.id)}
+                    className={`p-3 cursor-pointer flex justify-between items-center transition-colors ${activeDemographicBrush === p.id ? 'bg-gray-50' : 'hover:bg-gray-50'}`}
+                  >
+                    <div>
+                      <div className="font-bold text-gray-800">{p.name}</div>
+                      <div className="text-xs text-gray-500">Pop: {p.populationPerTile.toLocaleString()} / tile</div>
+                    </div>
+                    
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); removeDemographicProfile(p.id); }}
+                      className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition"
+                    >✕</button>
                   </div>
-                  <div className="w-4 h-4 rounded-full border shadow-inner" style={{ backgroundColor: p.color }}></div>
-                </button>
+
+                  {/* Sliders for dynamic axes */}
+                  <div className="p-3 bg-white border-t border-gray-100 flex flex-col gap-3">
+                    {axes.map(axis => (
+                      <div key={axis} className="text-xs">
+                        <div className="flex justify-between font-semibold mb-1 text-gray-600">
+                          <span>{axis}</span>
+                          <span>{(p.positions[axis] || 0).toFixed(2)}</span>
+                        </div>
+                        <input 
+                          type="range" min="-1" max="1" step="0.05" 
+                          value={p.positions[axis] || 0}
+                          onChange={(e) => updateDemographicPosition(p.id, axis, parseFloat(e.target.value))}
+                          className="w-full accent-purple-600 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </div>

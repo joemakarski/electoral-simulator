@@ -56,9 +56,12 @@ interface SimulationState {
 
     brushMode: "district" | "demographic"; // Toggle what the mouse paints
     setBrushMode: (mode: "district" | "demographic") => void;
+
     demographicProfiles: DemographicProfile[];
     addDemographicProfile: (profile: DemographicProfile) => void;
     removeDemographicProfile: (profileId: string) => void;
+    updateDemographicPosition: (profileId: string, axis: string, value: number) => void;
+
     activeDemographicBrush: string | null;
     setActiveDemographicBrush: (profileId: string | null) => void;
 
@@ -127,6 +130,11 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     
     addDemographicProfile: (profile) => set((state) => ({ demographicProfiles: [...state.demographicProfiles, profile] })),
     removeDemographicProfile: (id) => set((state) => ({ demographicProfiles: state.demographicProfiles.filter(p => p.id !== id) })),
+    updateDemographicPosition: (profileId, axis, value) => set((state) => ({ 
+        demographicProfiles: state.demographicProfiles.map(p => p.id===profileId ? { 
+            ...p, positions: { ...p.positions, [axis]: value } 
+        } : p) 
+    })),
 
     results: null,
     setResults: (results) => set({ results }),
@@ -134,10 +142,16 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     axes: ["Economy", "Social"], // Default axes
     addAxis: (axis) => set((state) => {
         if (state.axes.includes(axis)) return state;
+
+        // All new parties and demographics to have default 0 value
         const newParties = state.parties.map(p => ({
-            ...p, basePositions: { ...p.basePositions, [axis]: 0.0 } // All existing parties to have 0.0 for their new axis' value
+            ...p, basePositions: { ...p.basePositions, [axis]: 0.0 }
         }));
-        return { axes: [...state.axes, axis], parties: newParties };
+        const newDemographics = state.demographicProfiles.map(d => ({
+            ...d, positions: { ...d.positions, [axis]: 0.0 }
+        }));
+
+        return { axes: [...state.axes, axis], parties: newParties, demographicProfiles: newDemographics };
     }),
     removeAxis: (axis) => set((state) => ({ axes: state.axes.filter(a => a !== axis) })),
 
