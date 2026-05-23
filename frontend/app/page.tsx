@@ -4,6 +4,7 @@ import { useSimulationStore } from '@/store/simulationStore';
 import MapGrid from '@/components/MapGrid'; 
 import BuilderControls from '@/components/BuilderControls';
 import SimulationControls from '@/components/SimulationControls';
+import ResultsDashboard from '@/components/ResultsDashboard';
 
 export default function Home() {
   const { isNationLocked } = useSimulationStore();
@@ -21,6 +22,9 @@ export default function Home() {
           <div className="bg-white p-6 rounded-lg shadow-md border flex justify-center">
             <MapGrid />
           </div>
+
+          <ResultsDashboard />
+          
         </div>
 
         {/* Right Column: The Controls */}
