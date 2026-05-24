@@ -52,8 +52,15 @@ export default function     DemographicsConfig() {
         <div className="flex gap-2 items-center">
           <span className="text-xs font-bold text-gray-500 uppercase">Pop/Tile:</span>
           <input 
-            type="number" step="100" min="100" value={newPop}
-            onChange={(e) => setNewPop(parseInt(e.target.value) || 1000)} className="w-24 p-2 border rounded text-sm"
+            type="number" step="100" min="100" 
+            value={newPop===0 ? "" : newPop}
+            onChange={(e) => {
+              const safeValue = Number(e.target.value) || 0;
+              setNewPop(safeValue)
+            }} 
+            onBlur={() => {if (newPop<1) setNewPop(1000)}
+            }
+            className="w-24 p-2 border rounded text-sm"
           />
           <button 
             onClick={handleAdd} disabled={!newName.trim()}

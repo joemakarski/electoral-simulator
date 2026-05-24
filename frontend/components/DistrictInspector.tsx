@@ -86,8 +86,16 @@ export default function DistrictInspector() {
                 <label className="text-xs font-bold text-gray-500 uppercase">Number of Seats</label>
                 <input 
                   type="number" min="1"
-                  value={selectedTile.num_seats}
-                  onChange={(e) => updateDistrictTile(selectedTile.id, { num_seats: parseInt(e.target.value) || 1 })}
+                  value={selectedTile.num_seats === 0 ? "" : selectedTile.num_seats}
+                  onChange={(e) => {
+                    const safeValue = Number(e.target.value) || 0;
+                    updateDistrictTile(selectedTile.id, { num_seats: safeValue });
+                  }}
+                  onBlur={() => {
+                    if (selectedTile.num_seats < 1) {
+                      updateDistrictTile(selectedTile.id, { num_seats: 1 });
+                    }
+                  }}
                   disabled={isNationLocked}
                   className="w-full p-2 border rounded mt-1 font-semibold text-gray-800 focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-gray-100 disabled:text-gray-500"
                 />
