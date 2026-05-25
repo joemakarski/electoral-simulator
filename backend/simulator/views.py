@@ -10,8 +10,8 @@ from simulator.systems.listpr import OpenListProportionalRepresentation
 from simulator.systems.mmp import MixedMemberProportionalRepresentation
 
 SYSTEM_REGISTRY = {
-    'fptp': Plurality(),
-    'dhondt': OpenListProportionalRepresentation(),
+    'plurality': Plurality(),
+    'listpr': OpenListProportionalRepresentation(),
     'mmp': MixedMemberProportionalRepresentation(),
 }
 

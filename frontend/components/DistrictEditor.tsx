@@ -2,7 +2,7 @@
 
 import { useSimulationStore } from "@/store/simulationStore";
 
-export default function DistrictInspector() {
+export default function DistrictEditor() {
   const {
     grid,
     selectedDistrictId,
@@ -39,13 +39,13 @@ export default function DistrictInspector() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center border-b pb-2">
-        <h2 className="text-xl font-bold text-gray-800">District Inspector</h2>
+        <h2 className="text-xl font-bold text-gray-800">District Editor</h2>
         <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
           {activeDistrictsCount} Active
         </span>
       </div>
 
-      {/* INSPECTOR PANEL */}
+      {/* EDITOR PANEL */}
       <div className="flex flex-col gap-5 animate-fade-in min-h-[250px]">
         {!selectedTile || !selectedTile.isActive ? (
           <div className="flex flex-col items-center justify-center h-full min-h-[200px] border-2 border-dashed border-gray-300 rounded-lg text-gray-400 p-6 text-center bg-gray-50">

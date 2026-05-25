@@ -2,7 +2,7 @@
 
 import { useSimulationStore } from "@/store/simulationStore";
 
-export default function LocalDistrictSandbox() {
+export default function DistrictResults() {
   const { 
     grid, 
     selectedDistrictId, 

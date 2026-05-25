@@ -37,7 +37,7 @@ class SimulationRequestSerializer(serializers.Serializer):
     sent by Next.js when the user runs an election.
     """
     system = serializers.ChoiceField(
-        choices=['fptp', 'dhondt', 'mmp'] # Currently available systems only
+        choices=['plurality', 'listpr', 'mmp'] # Currently available systems only
     ) 
     districts = DistrictSerializer(many=True)
     candidates = CandidateSerializer(many=True)

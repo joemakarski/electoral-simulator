@@ -95,7 +95,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     isNationLocked: false,
     setNationLocked: (locked) => set({isNationLocked: locked}),
 
-    activeSystem: "fptp",
+    activeSystem: "plurality",
     setActiveSystem: (system) => set({activeSystem: system}),
 
     results: null,

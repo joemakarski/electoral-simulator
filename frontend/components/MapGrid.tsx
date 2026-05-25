@@ -93,7 +93,7 @@ export default function MapGrid() {
     <div className="flex flex-col items-center">
       <div 
         className={`grid grid-cols-10 gap-1.5 p-3 bg-orange-50 border-4 rounded-xl shadow-inner w-fit select-none ${
-          isNationLocked ? "border-gray-300" : "border-neutral-400 animate-pulse-subtle"
+          isNationLocked ? "border-gray-500" : "border-gray-300"
         }`}
       >
         {grid.map((tile) => {
@@ -113,13 +113,13 @@ export default function MapGrid() {
       </div>
       
       {/* Contextual status */}
-      <div className="mt-4 text-sm text-gray-500 font-bold bg-white px-3 py-1.5">
+      <div className="mt-4 text-sm text-gray-500 font-bold px-3 py-1.5">
         {!isNationLocked ? (
-          <span className="text-indigo-600">Click tiles to select districts</span>
+          <span className="text-neutral-400">Click tiles to create and edit districts</span>
         ) : selectedDistrictId !== null ? (
           <span className="text-orange-400">Inspecting District {selectedDistrictId + 1}</span>
         ) : (
-          <span className="text-neutral-400">Click an active district to inspect</span>
+          <span className="text-neutral-600">Click an active district to inspect</span>
         )}
       </div>
     </div>

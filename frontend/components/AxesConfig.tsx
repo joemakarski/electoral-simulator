@@ -31,7 +31,7 @@ export default function AxesConfig() {
     <div className="bg-white p-5 rounded-lg border shadow-sm mb-6">
       <div className="flex justify-between items-center mb-4 border-b pb-2">
         <h2 className="text-lg font-bold text-gray-800">Axes Editor</h2>
-        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Settings</span>
+        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Positions</span>
       </div>
 
       <p className="text-xs text-gray-500 mb-4">
@@ -42,7 +42,7 @@ export default function AxesConfig() {
       <div className="flex items-center gap-2 mb-4">
         <input 
           type="text" 
-          placeholder="e.g., Foreign Policy, Environment..."
+          placeholder="e.g. Environment..."
           value={newAxisName}
           onChange={(e) => setNewAxisName(e.target.value)}
           onKeyDown={handleKeyDown}

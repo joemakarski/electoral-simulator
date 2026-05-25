@@ -36,6 +36,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+.vscode/
 
 # Ignore ALL environment variable files globally
 .env*

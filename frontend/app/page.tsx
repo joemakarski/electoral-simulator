@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useSimulationStore } from '@/store/simulationStore';
+
 import MapGrid from '@/components/MapGrid'; 
-import DistrictInspector from '@/components/DistrictInspector';
+import DistrictEditor from '@/components/DistrictEditor';
 import SimulationControls from '@/components/SimulationControls';
 import ResultsDashboard from '@/components/ResultsDashboard';
 import AxesConfig from '@/components/AxesConfig';
 import DemographicsConfig from '@/components/DemographicsConfig';
-import LocalDistrictSandbox from '@/components/LocalDistrictSandbox';
+import DistrictResults from '@/components/DistrictResults';
 
 export default function Home() {
   const { isNationLocked, selectedDistrictId } = useSimulationStore();
@@ -29,10 +30,10 @@ export default function Home() {
         {/* Left/Center Column: The Map */}
         <div className="col-span-2">
           <h1 className="text-3xl font-bold mb-4 text-gray-800">
-            {isNationLocked ? "Electoral Sandbox" : "Nation Builder"}
+            {isNationLocked ? "Electoral Simulator" : "Build an Electorate"}
           </h1>
           
-          <div className="bg-white p-6 rounded-lg shadow-sm border flex justify-center top-8">
+          <div className="bg-sky-50 p-6 rounded-lg shadow-sm border flex justify-center top-8">
             <MapGrid />
           </div>
 
@@ -45,7 +46,7 @@ export default function Home() {
           {isNationLocked ? (
              /* Post-lock: Simulator Mode */
              selectedDistrictId !== null ? (
-               <LocalDistrictSandbox />
+               <DistrictResults />
              ) : (
                <div className="bg-white p-6 rounded-lg shadow-sm border">
                  <SimulationControls />
@@ -71,7 +72,7 @@ export default function Home() {
                      builderTab === 'voters' ? 'bg-white text-emerald-600 border-b-2 border-emerald-600' : 'text-gray-500 hover:bg-gray-200'
                    }`}
                  >
-                   Voters
+                   Demographics
                  </button>
                  <button 
                    onClick={() => setBuilderTab('districts')}
@@ -87,7 +88,7 @@ export default function Home() {
                <div className="p-6">
                  {builderTab === 'axes' && <AxesConfig />}
                  {builderTab === 'voters' && <DemographicsConfig />}
-                 {builderTab === 'districts' && <DistrictInspector />}
+                 {builderTab === 'districts' && <DistrictEditor />}
                </div>
                
              </div>

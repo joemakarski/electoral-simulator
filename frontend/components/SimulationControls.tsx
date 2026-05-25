@@ -106,9 +106,10 @@ export default function SimulationControls() {
           onChange={(e) => setActiveSystem(e.target.value)}
           className="w-full p-3 border rounded-lg bg-white shadow-sm"
         >
-          <option value="fptp">First Past The Post (Plurality)</option>
-          <option value="dhondt">Regional PR (D'Hondt)</option>
+          <option value="plurality">Plurality (SNTV/FPTP)</option>
+          <option value="listpr">Regional PR (open list)</option>
           <option value="mmp">Mixed-Member Proportional (MMP)</option>
+          <option disabled value="stv">To-do: Single Transferable Vote</option>
         </select>
       </div>
 
