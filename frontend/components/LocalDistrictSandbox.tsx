@@ -112,44 +112,48 @@ export default function LocalDistrictSandbox() {
         ) : (
           // Post-election view
           <div className="flex flex-col gap-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-            {candidatePerformance.map((cand) => (
-              <div 
-                key={cand.id} 
-                className={`p-3 border rounded-lg shadow-sm transition-all ${
-                  cand.isWinner ? 'bg-amber-50 border-amber-300 ring-1 ring-amber-300' : 'bg-white border-gray-200'
-                }`}
-              >
-                <div className="flex justify-between items-end mb-2">
-                  <div className="flex flex-col">
-                    <div className="font-bold text-gray-800 flex items-center gap-2">
-                      {cand.name}
-                      {cand.isWinner && (
-                        <span className="text-[10px] bg-amber-200 text-amber-800 px-2 py-0.5 rounded uppercase tracking-wider font-bold">
-                          Elected
-                        </span>
-                      )}
+            {candidatePerformance.map((cand) => {
+              const party = parties.find(p => p.id === cand.party_id);
+              return (
+                <div 
+                  key={cand.id} 
+                  className={`p-3 border rounded-lg shadow-sm transition-all ${
+                    cand.isWinner ? 'bg-amber-50 border-amber-300 ring-1 ring-amber-300' : 'bg-white border-gray-200'
+                  }`}
+                  style={{ borderLeft: "6px solid", color: party?.color || "#ccc" }}
+                >
+                  <div className="flex justify-between items-end mb-2">
+                    <div className="flex flex-col">
+                      <div className="font-bold text-gray-800 flex items-center gap-2">
+                        {cand.name}
+                        {cand.isWinner && (
+                          <span className="text-[13px] text-amber-800 py-0.5 rounded uppercase tracking-wider font-bold">
+                            ✅
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-sm text-gray-500 uppercase font-semibold">{cand.partyName}</span>
                     </div>
-                    <span className="text-xs text-gray-500 uppercase font-semibold">{cand.partyName}</span>
+                    
+                    <div className="flex flex-col items-end">
+                      <span className="font-bold text-gray-800">{cand.percentage.toFixed(1)}%</span>
+                      <span className="text-xs text-gray-500">{cand.votes.toLocaleString()} votes</span>
+                    </div>
                   </div>
-                  
-                  <div className="flex flex-col items-end">
-                    <span className="font-bold text-gray-800">{cand.percentage.toFixed(1)}%</span>
-                    <span className="text-xs text-gray-500">{cand.votes.toLocaleString()} votes</span>
-                  </div>
-                </div>
 
-                {/* Bar chart */}
-                <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
-                  <div 
-                    className="h-full transition-all duration-1000 ease-out" 
-                    style={{ 
-                      width: `${cand.percentage}%`, 
-                      backgroundColor: cand.color 
-                    }} 
-                  />
+                  {/* Bar chart */}
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                    <div 
+                      className="h-full transition-all duration-1000 ease-out" 
+                      style={{ 
+                        width: `${cand.percentage}%`, 
+                        backgroundColor: cand.color 
+                      }} 
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>

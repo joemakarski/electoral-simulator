@@ -156,7 +156,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
             for (let i = 0; i < CANDIDATE_LIST_SIZE; i++) {
                 newCandidates.push({ 
                     id: `c_${party.id}_national_${i}`, 
-                    name: `${party.name} (List ${i+1})`, 
+                    name: `National List #${i+1}`, 
                     party_id: party.id, positions: { ...party.basePositions }, district_id: null 
                 }); 
             }
@@ -166,7 +166,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
                 for (let i = 0; i < district.num_seats; i++) {
                     newCandidates.push({ 
                         id: `c_${party.id}_d${district.id}_${i}`, 
-                        name: `${party.name} (Local ${i+1})`, 
+                        name: `Local #${i+1} of ${district.name}`, 
                         party_id: party.id, positions: { ...party.basePositions }, district_id: `d${district.id}`
                     })
                 }
