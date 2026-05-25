@@ -37,7 +37,7 @@ class ElectoralSystem(Protocol):
         
         # Initialize with 0, for every candidate, in every district
         local_votes: Dict[str, Dict[str, int]] = {
-            d.id: {c.id: 0 for c in candidates if c.district_id == d.id or c.district_id is None} 
+            d.id: {c.id: 0 for c in candidates if c.district_id == d.id} 
             for d in districts
         }
         national_party_votes: Dict[str, int] = defaultdict(int)
