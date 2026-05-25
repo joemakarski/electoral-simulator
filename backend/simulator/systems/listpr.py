@@ -5,13 +5,13 @@ from simulator.domain.entities import VoterBlock, Candidate, Ballot, District
 from simulator.systems.base import ElectoralSystem
 from simulator.systems.utils import calculate_distance
 
-class DHondtProportionalRepresentation(ElectoralSystem):
+class OpenListProportionalRepresentation(ElectoralSystem):
     """
     Implements Regional Party-List Proportional Representation using the D'Hondt method.
     Assumes Open List (seats go to the highest voted candidates within the winning party).
     """
     def __str__(self):
-        return "D'Hondt Proportional Representation (open list)"
+        return "Open List Proportional Representation"
     
     def simulate_voting(self, voters: List[VoterBlock], candidates: List[Candidate]) -> List[Ballot]:
         ballots = []
@@ -19,7 +19,7 @@ class DHondtProportionalRepresentation(ElectoralSystem):
         # Iterate through every voter block
         for block in voters:
             district_id = block.district_id
-            voteable_candidates = [c for c in candidates if c.district_id == district_id or c.district_id == None] # Get district/at-large candidates
+            voteable_candidates = [c for c in candidates if c.district_id == district_id] # Get district candidates
             if not voteable_candidates: continue
             
             # Get closest voteable candidates for each voting block

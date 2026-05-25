@@ -94,10 +94,16 @@ class MixedMemberProportionalRepresentation(ElectoralSystem):
         local_seats_won_by_party = defaultdict(int)
 
         for d in districts:
-            if local_votes[d.id]:
-                winner_id = max(local_votes[d.id], key=lambda c_id: local_votes[d.id][c_id])
-                winners[d.id].append(winner_id)
-                local_seats_won_by_party[party_lookup[winner_id]] += 1 #NOTE: restricted to 1 member
+            vote_counts = local_votes[d.id]
+            
+            if vote_counts and any(v > 0 for v in vote_counts.values()):
+                sorted_candidates = sorted(vote_counts, key=lambda k: vote_counts[k], reverse=True)
+                local_winners = sorted_candidates[:d.num_seats] # Handle multi-seat district
+                winners[d.id].extend(local_winners)
+
+                for winner_id in local_winners:
+                    p_id = party_lookup[winner_id]
+                    local_seats_won_by_party[p_id] += 1
 
         # 3. Filter with electoral threshold
         eligible_parties = {

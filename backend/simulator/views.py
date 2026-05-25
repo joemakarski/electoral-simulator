@@ -5,14 +5,13 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from simulator.serializers import SimulationRequestSerializer
-from simulator.systems.base import ElectoralSystem
-from simulator.systems.fptp import FirstPastThePost
-from simulator.systems.dhondt import DHondtProportionalRepresentation
+from simulator.systems.plurality import Plurality
+from simulator.systems.listpr import OpenListProportionalRepresentation
 from simulator.systems.mmp import MixedMemberProportionalRepresentation
 
 SYSTEM_REGISTRY = {
-    'fptp': FirstPastThePost(),
-    'dhondt': DHondtProportionalRepresentation(),
+    'fptp': Plurality(),
+    'dhondt': OpenListProportionalRepresentation(),
     'mmp': MixedMemberProportionalRepresentation(),
 }
 

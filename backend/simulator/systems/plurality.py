@@ -5,10 +5,10 @@ from simulator.domain.entities import VoterBlock, Candidate, Ballot, District
 from simulator.systems.base import ElectoralSystem
 from simulator.systems.utils import calculate_distance
 
-class FirstPastThePost(ElectoralSystem):
-    """Simulate a single-winner plurality system"""
+class Plurality(ElectoralSystem):
+    """Simulate a plurality system, where voters cast a single vote and the top candidates win."""
     def __str__(self):
-        return "First Past The Post"
+        return "Plurality (SNTV/FPTP)"
     
     def simulate_voting(self, voters: List[VoterBlock], candidates: List[Candidate]) -> List[Ballot]:
         ballots = []
@@ -16,7 +16,7 @@ class FirstPastThePost(ElectoralSystem):
         # Iterate through every voter block
         for block in voters:
             district_id = block.district_id
-            voteable_candidates = [c for c in candidates if c.district_id == district_id or c.district_id == None] # Get district/at-large candidates
+            voteable_candidates = [c for c in candidates if c.district_id == district_id] # Get district candidates
             if not voteable_candidates: continue
             
             # Get closest voteable candidates for each voting block
@@ -41,14 +41,17 @@ class FirstPastThePost(ElectoralSystem):
         # Tally local and national votes
         (local_votes, national_party_votes) = self._tally_standard_votes(ballots, candidates, districts)
         
-        # Now determine the winners
+        district_lookup = {d.id: d for d in districts}
         winners = {"NATIONAL_LIST": []} # no national list
 
+        # Now determine who won
         for (d_id, vote_counts) in local_votes.items():
-            # FPTP: Highest vote count gets the single seat
+            num_seats = district_lookup[d_id].num_seats
+
+            # SNTV/Block: Top N candidates are winners
             if vote_counts and any(v > 0 for v in vote_counts.values()):
-                winner_id = max(vote_counts, key=lambda k: vote_counts[k])
-                winners[d_id] = [winner_id]
+                sorted_candidates = sorted(vote_counts, key=lambda k: vote_counts[k], reverse=True)
+                winners[d_id] = sorted_candidates[:num_seats]
             else:
                 winners[d_id] = []
 
@@ -60,7 +63,7 @@ class FirstPastThePost(ElectoralSystem):
             "winners": winners,
             "stats": {
                 "total_parliament_size": sum(len(w) for w in winners.values()),
-                "entitlements": {}, # FPTP doesn't have proportional entitlements
+                "entitlements": {}, # No proportional entitlements for plurality
                 "notes": []
             }
         }
