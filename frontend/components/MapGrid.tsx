@@ -19,7 +19,7 @@ export default function MapGrid() {
     // Inactive land is always an empty box
     if (!tile.isActive) {
       return { 
-        className: "bg-gray-100 text-gray-300 border-dashed border-gray-200 cursor-pointer hover:bg-gray-200/50", 
+        className: "bg-orange-100/60 text-gray-300 border-dashed border-gray-200 cursor-pointer hover:bg-orange-200/40", 
         style: {},
         content: "" 
       };
@@ -40,7 +40,7 @@ export default function MapGrid() {
 
         if (winningParty) {
           let stateClass = "text-white font-black drop-shadow shadow-md";
-          if (isSelected) stateClass += " ring-4 ring-black/50 scale-95 z-10";
+          if (isSelected) stateClass += " ring-4 ring-black/70 scale-95 z-10";
           else if (hasSelection) stateClass += " opacity-25 grayscale-[40%] scale-95";
 
           return {
@@ -53,17 +53,17 @@ export default function MapGrid() {
     }
 
     // Before simulation, show standard active district styling
-    let baseClass = "bg-taupe-500 text-white font-bold shadow-md transition-all";
+    let baseClass = "bg-orange-300/75 text-black font-bold shadow-md transition-all";
     if (isSelected) {
-      baseClass += " ring-4 ring-black/40 scale-95 z-10";
+      baseClass += " ring-4 ring-orange-300 scale-95 z-10";
     } else if (hasSelection) {
-      baseClass += " opacity-50 scale-95 grayscale-[20%]";
+      baseClass += " opacity-60 scale-95 grayscale-[20%]";
     }
 
     return { 
       className: baseClass, 
       style: {},
-      content: tile.num_seats // Displaying the number of seats inside the hex cell looks like a true cartogram
+      content: tile.num_seats
     };
   };
 
@@ -92,8 +92,8 @@ export default function MapGrid() {
   return (
     <div className="flex flex-col items-center">
       <div 
-        className={`grid grid-cols-10 gap-1.5 p-3 bg-gray-50 border-4 rounded-xl shadow-inner w-fit select-none ${
-          isNationLocked ? "border-gray-300" : "border-taupe-400 animate-pulse-subtle"
+        className={`grid grid-cols-10 gap-1.5 p-3 bg-orange-50 border-4 rounded-xl shadow-inner w-fit select-none ${
+          isNationLocked ? "border-gray-300" : "border-neutral-400 animate-pulse-subtle"
         }`}
       >
         {grid.map((tile) => {
@@ -102,7 +102,7 @@ export default function MapGrid() {
             <div
               key={tile.id}
               onClick={() => handleTileClick(tile.id)}
-              className={`w-10 h-10 md:w-12 md:h-12 rounded-lg border border-black/5 flex items-center justify-center text-sm transition-all duration-200 ${props.className}`}
+              className={`w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center text-sm transition-all duration-200 ${props.className}`}
               style={props.style}
               title={tile.isActive ? `${tile.name} (${tile.num_seats} seats)` : "Empty Land"}
             >
@@ -113,13 +113,13 @@ export default function MapGrid() {
       </div>
       
       {/* Contextual status */}
-      <div className="mt-4 text-xs text-gray-500 font-bold uppercase tracking-wider bg-white px-3 py-1.5 rounded-full border shadow-sm">
+      <div className="mt-4 text-sm text-gray-500 font-bold bg-white px-3 py-1.5">
         {!isNationLocked ? (
           <span className="text-indigo-600">Click tiles to select districts</span>
         ) : selectedDistrictId !== null ? (
-          <span className="text-amber-600">Inspecting District {selectedDistrictId + 1}</span>
+          <span className="text-orange-400">Inspecting District {selectedDistrictId + 1}</span>
         ) : (
-          <span className="text-emerald-600">Click an active district to inspect</span>
+          <span className="text-neutral-400">Click an active district to inspect</span>
         )}
       </div>
     </div>
