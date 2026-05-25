@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 
 const CANDIDATE_LIST_SIZE = 15
+const CANDIDATE_FUZZ = 0.10;
 
 export type PositionVector = Record<string, number>;
 
@@ -147,9 +148,19 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     // Candidate generator
     candidates: [],
     generateCandidates: () => {
-        const { parties, grid } = get();
+        const { parties, grid, axes } = get();
         const activeDistricts = grid.filter(t => t.isActive);
         const newCandidates: Candidate[] = [];
+        
+        const fuzzPositions = (basePositions: PositionVector) => {
+            const fuzzed: PositionVector = {};
+            axes.forEach(axis => {
+                const base = basePositions[axis] || 0;
+                const deviation = (Math.random() - 0.5) * CANDIDATE_FUZZ
+                fuzzed[axis] = Math.max(-1, Math.min(1, base+deviation));
+            })
+            return fuzzed
+        }
 
         parties.forEach(party => {
             // National List
@@ -157,7 +168,9 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
                 newCandidates.push({ 
                     id: `c_${party.id}_national_${i}`, 
                     name: `National List #${i+1}`, 
-                    party_id: party.id, positions: { ...party.basePositions }, district_id: null 
+                    party_id: party.id, 
+                    positions: { ...party.basePositions }, 
+                    district_id: null 
                 }); 
             }
 
@@ -167,7 +180,9 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
                     newCandidates.push({ 
                         id: `c_${party.id}_d${district.id}_${i}`, 
                         name: `Local #${i+1} of ${district.name}`, 
-                        party_id: party.id, positions: { ...party.basePositions }, district_id: `d${district.id}`
+                        party_id: party.id, 
+                        positions: { ...fuzzPositions(party.basePositions) }, 
+                        district_id: `d${district.id}`
                     })
                 }
             });
