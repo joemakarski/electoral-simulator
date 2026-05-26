@@ -117,7 +117,7 @@ export default function ResultsDashboard() {
 
             return (
               <div key={dId} className="p-4 border rounded bg-gray-50 shadow-sm hover:shadow transition-shadow">
-                <h4 className="font-bold text-gray-700 mb-3">{districtLookup[dId] || dId}</h4>
+                <h4 className="font-bold text-gray-700 mb-3 break-words max-w-[200px]">{districtLookup[dId] || dId}</h4>
                 <div className="flex flex-col gap-2">
                   {wList.map((wId) => {
                     const cMeta = candidateLookup[wId];
@@ -130,8 +130,8 @@ export default function ResultsDashboard() {
                           style={{ backgroundColor: pMeta.color }}
                         ></div>
                         <div className="flex flex-col">
-                          <span className="font-semibold text-gray-800">{cMeta?.name || wId}</span>
-                          <span className="text-gray-500 text-xs">{pMeta.name}</span>
+                          <span className="font-semibold text-gray-800 truncate max-w-[120px]">{cMeta?.name || wId}</span>
+                          <span className="text-gray-500 text-xs truncate max-w-[120px]">{pMeta.name}</span>
                         </div>
                       </div>
                     );

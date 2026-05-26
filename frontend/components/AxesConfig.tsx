@@ -28,30 +28,28 @@ export default function AxesConfig() {
   };
 
   return (
-    <div className="bg-white p-5 rounded-lg border shadow-sm mb-6">
-      <div className="flex justify-between items-center mb-4 border-b pb-2">
+    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6">
+      <div className="flex justify-between items-center mb-5 border-b border-gray-100 pb-3">
         <h2 className="text-lg font-bold text-gray-800">Axes Editor</h2>
-        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Positions</span>
+        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Positions</span>
       </div>
 
-      <p className="text-xs text-gray-500 mb-4">
-        Add a new position spectrum.
-      </p>
+      <p className="text-xs text-gray-500 mb-4">Add a new position spectrum.</p>
 
       {/* Input Form */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-3 mb-5">
         <input 
           type="text" 
           placeholder="e.g. Environment..."
           value={newAxisName}
           onChange={(e) => setNewAxisName(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="flex-1 p-2 border rounded text-sm focus:ring-2 focus:ring-purple-500 outline-none"
+          className="flex-1 p-2.5 border border-gray-300 rounded-md text-sm text-gray-800 focus:ring-2 focus:ring-purple-500 outline-none transition-all"
         />
         <button 
           onClick={handleAddAxis}
           disabled={!newAxisName.trim()}
-          className="bg-purple-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-purple-700 disabled:bg-gray-300 transition-colors"
+          className="bg-purple-600 text-white px-5 py-2.5 rounded-md text-sm font-bold hover:bg-purple-700 disabled:bg-gray-300 transition-colors"
         >
           Add
         </button>
@@ -62,13 +60,13 @@ export default function AxesConfig() {
         {axes.map((axis) => (
           <div 
             key={axis} 
-            className="flex items-center bg-gray-100 border border-gray-200 text-gray-700 rounded-full px-3 py-1 text-sm font-semibold shadow-sm"
+            className="flex items-center bg-gray-50 border border-gray-200 text-gray-700 rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm"
           >
             <span>{axis}</span>
             <button 
               onClick={() => removeAxis(axis)}
-              disabled={axes.length <= 1} // Prevent deleting the last axis
-              className="ml-2 text-gray-400 hover:text-red-500 disabled:opacity-30 disabled:hover:text-gray-400 transition-colors"
+              disabled={axes.length <= 1}
+              className="ml-3 text-gray-400 hover:text-red-500 disabled:opacity-30 disabled:hover:text-gray-400 transition-colors"
               title={axes.length <= 1 ? "Cannot delete the last axis" : "Remove axis"}
             >
               ✕
