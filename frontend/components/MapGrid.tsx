@@ -130,7 +130,7 @@ export default function MapGrid() {
             <div
               key={tile.id}
               onClick={() => handleTileClick(tile.id)}
-              className={`w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center text-sm transition-all duration-200 ${props.className}`}
+              className={`w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center text-sm transition-all duration-200 ${props.className}`}
               style={props.style}
               title={tile.isActive ? `${tile.name} (${tile.num_seats} seats)` : "Empty Land"}
             >

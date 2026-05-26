@@ -24,7 +24,7 @@ export default function Home() {
   }, [selectedDistrictId, isNationLocked]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8 text-black">
+    <div className="min-h-screen bg-sky-100 p-8 text-black">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Left/Center Column: The Map */}
