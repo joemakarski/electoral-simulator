@@ -36,23 +36,23 @@ export default function DemographicsConfig() {
       </div>
 
       {/* Add Profile Form */}
-      <div className="flex flex-col gap-3 mb-5 bg-gray-50 p-3 rounded border">
-        <div className="flex items-center gap-2">
+      <div className="bg-gray-50 p-4 rounded-lg border mb-4 shadow-sm flex flex-col gap-3">
+        <div className="flex items-center gap-3">
           <input 
             type="color" value={newColor} onChange={(e) => setNewColor(e.target.value)}
             className="w-10 h-10 p-1 border rounded cursor-pointer shrink-0" 
           />
           <input 
-            type="text" placeholder="Profile Name (e.g. Populist Base)..." value={newName}
-            onChange={(e) => setNewName(e.target.value)} className="flex-1 p-2 border rounded text-sm"
+            type="text" placeholder="Name (e.g. Minorities)..." value={newName}
+            onChange={(e) => setNewName(e.target.value)} className="flex-1 p-2 min-w-40 border rounded focus:ring-2 focus:ring-blue-500 outline-none"
           />
-          <button 
-            onClick={handleAdd} disabled={!newName.trim()}
-            className="px-4 py-2 bg-emerald-600 text-white font-bold rounded hover:bg-emerald-700 disabled:bg-gray-300 transition-colors"
-          >
-            Add
-          </button>
         </div>
+        <button 
+          onClick={handleAdd} disabled={!newName.trim()}
+          className="w-full bg-emerald-600 text-white px-3 py-2 rounded-md hover:bg-emerald-700 font-bold transition-colors"
+        >
+          Add Profile
+        </button>
       </div>
 
       {/* Profiles List */}
