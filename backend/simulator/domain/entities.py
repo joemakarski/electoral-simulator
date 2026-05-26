@@ -29,6 +29,7 @@ class VoterBlock:
     population: int
     positions: PositionVector
     district_id: str
+    fuzz_level: float = 0.0
 
 @dataclass
 class Ballot:

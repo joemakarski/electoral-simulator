@@ -8,7 +8,9 @@ from simulator.serializers import SimulationRequestSerializer
 from simulator.systems.plurality import Plurality
 from simulator.systems.listpr import OpenListProportionalRepresentation
 from simulator.systems.mmp import MixedMemberProportionalRepresentation
+from simulator.systems.utils import apply_voter_fuzzing
 
+import json
 SYSTEM_REGISTRY = {
     'plurality': Plurality(),
     'listpr': OpenListProportionalRepresentation(),
@@ -32,6 +34,8 @@ class RunSimulationView(APIView):
         districts = simulation_data['districts']
         candidates = simulation_data['candidates']
         voters = simulation_data['voters']
+        
+        fuzzed_voters = apply_voter_fuzzing(voters, num_chunks=100)
 
         engine = SYSTEM_REGISTRY.get(system_type)
         if not engine:
@@ -41,7 +45,7 @@ class RunSimulationView(APIView):
             )
 
         try:
-            ballots = engine.simulate_voting(voters=voters, candidates=candidates)
+            ballots = engine.simulate_voting(voters=fuzzed_voters, candidates=candidates)
             results = engine.allocate_seats(ballots=ballots, districts=districts, candidates=candidates)
 
             return Response(results, status=status.HTTP_200_OK)

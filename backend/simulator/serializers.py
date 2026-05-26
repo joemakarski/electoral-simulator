@@ -26,6 +26,7 @@ class VoterBlockSerializer(serializers.Serializer):
     population = serializers.IntegerField(min_value=1)
     positions = serializers.DictField(child=serializers.FloatField())
     district_id = serializers.CharField()
+    fuzz_level = serializers.FloatField(required=False, default=0.0)
 
     def create(self, validated_data):
         return VoterBlock(**validated_data)
