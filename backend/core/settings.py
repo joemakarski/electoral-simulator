@@ -57,7 +57,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://electoral-simulator-psi.vercel.app/",
+    "https://electoral-simulator-psi.vercel.app",
     "http://localhost:3000",
 ]
 
