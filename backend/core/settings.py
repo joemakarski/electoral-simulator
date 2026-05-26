@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-hv-c@t(mo_q$j+_s8=)ywd=_0o4)3i33vlle)$ghz742+=e$x2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['https://electoral-simulator.onrender.com'] #TODO change to render url
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'https://electoral-simulator-psi.vercel.app/', 'https://electoral-simulator.onrender.com'] #TODO: review
 
 
 # Application definition
@@ -54,7 +54,6 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "https://electoral-simulator-psi.vercel.app/",
-    "https://electoral-simulator.onrender.com",
     "http://localhost:3000",
 ]
 
