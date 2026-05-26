@@ -51,7 +51,7 @@ export default function SimulationControls() {
     // Format districts for Django
     const payloadDistricts = activeDistricts.map(t => ({
         id: `d${t.id}`,
-        name: t.name,
+        name: t.name.trim() || `District ${t.id + 1}`,
         num_seats: t.num_seats
     }));
 
