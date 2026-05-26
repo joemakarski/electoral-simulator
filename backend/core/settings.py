@@ -25,8 +25,12 @@ SECRET_KEY = 'django-insecure-hv-c@t(mo_q$j+_s8=)ywd=_0o4)3i33vlle)$ghz742+=e$x2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*'] #TODO: review
-
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "electoral-simulator-psi.vercel.app",
+    "electoral-simulator.onrender.com",
+]
 
 # Application definition
 
