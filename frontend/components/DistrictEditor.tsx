@@ -94,6 +94,11 @@ export default function DistrictEditor() {
                   <input 
                     type="text" value={selectedTile.name}
                     onChange={(e) => updateDistrictTile(selectedTile.id, { name: e.target.value })}
+                    onBlur={(e) => {
+                      if (!e.target.value.trim()) {
+                        updateDistrictTile(selectedTile.id, { name: `District ${selectedTile.id + 1}` });
+                      }
+                    }}
                     className="w-full p-2.5 border border-gray-300 rounded-md font-semibold text-gray-800 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                   />
                 </div>
