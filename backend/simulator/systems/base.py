@@ -1,22 +1,9 @@
+import math
 from typing import Protocol, List, Dict, Tuple
 from collections import defaultdict
+from simulator.systems.utils import calculate_distance
 
 from simulator.domain.entities import VoterBlock, Candidate, Ballot, District
-
-"""
-HIGH LEVEL ROUGH CONCEPT:
-On a pannable hexagonal map, Districts are selected - those Districts together form a Nation.
-You create a number of Ideas and allocate them to a specified number of Voters using some customisable algorithm.
-You also create some Parties and specify their Ideas.
-Then you choose how to allocate Voters across the Districts using another customisable algorithm (e.g. maybe some party is especially strong in northern districts).
-All these properties can be manually adjusted, or psuedo-randomly all changed at once via some algorithm (might be based on a distribution).
-You can then select a voting system, and simulate an election. The results will be visualised at the global and local level.
-
-NOTES:
-Still need to adapt for next.js django architecture.
-Some may be better suited for frontend.
-No algorithms yet.
-"""
 
 class ElectoralSystem(Protocol):
     """The signature that voting systems must implement."""
@@ -26,6 +13,49 @@ class ElectoralSystem(Protocol):
     
     def allocate_seats(self, ballots: List[Ballot], districts: List[District], candidates: List[Candidate], **kwargs) -> dict:
         ...
+
+    def _distribute_block_votes(self, block: VoterBlock, candidates: List[Candidate], sensitivity: float = 0.2) -> Dict[str, int]:
+        """
+        Splits a VoterBlock's population probabilistically among candidates based on proximity (exponential decay).
+        Higher sensitivity = Voters spread votes more evenly among nearby candidates.
+        """
+        if not candidates:
+            return {}
+
+        distances = {}
+        for c in candidates:
+            # Assuming calculate_distance is available
+            distances[c.id] = calculate_distance(block.positions, c.positions)
+
+        # Convert distances to weights using exponential decay
+        weights = {}
+        total_weight = 0.0
+        
+        for (c_id, dist) in distances.items():
+            # If dist is 0, weight is 1. As distance grows, weight approaches 0.
+            weight = math.exp(-dist / (sensitivity+0.001))
+            weights[c_id] = weight
+            total_weight += weight
+
+        # Distribute the population based on weight share
+        distribution = {}
+        votes_allocated = 0
+        
+        # Sort by weight descending to give the remainder to the top choice
+        sorted_candidates = sorted(weights.keys(), key=lambda k: weights[k], reverse=True)
+        
+        for c_id in sorted_candidates:
+            share = weights[c_id] / total_weight
+            votes = int(block.population * share)
+            distribution[c_id] = votes
+            votes_allocated += votes
+
+        # Give any rounding remainder to the closest candidate
+        remainder = block.population - votes_allocated
+        if remainder > 0 and sorted_candidates:
+            distribution[sorted_candidates[0]] += remainder
+
+        return distribution
 
     def _tally_standard_votes(
         self, ballots: List[Ballot], candidates: List[Candidate], districts: List[District]) -> Tuple[Dict[str, Dict[str, int]], Dict[str, int]]:

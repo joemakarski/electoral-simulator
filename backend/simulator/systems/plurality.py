@@ -16,24 +16,22 @@ class Plurality(ElectoralSystem):
         # Iterate through every voter block
         for block in voters:
             district_id = block.district_id
-            voteable_candidates = [c for c in candidates if c.district_id == district_id] # Get district candidates
-            if not voteable_candidates: continue
-            
-            # Get closest voteable candidates for each voting block
-            closest_candidate = min(
-                voteable_candidates, 
-                key=lambda c: calculate_distance(block.positions, c.positions)
-            )
-            
-            # Winner gets all the voting block's votes
-            if closest_candidate:
-                ballots.append(
-                    Ballot(
-                        district_id=district_id,
-                        population_weight=block.population,
-                        choices=[closest_candidate.id]
+            local_candidates = [c for c in candidates if c.district_id == district_id] # Get district candidates
+            if not local_candidates: continue
+ 
+            # Distribute along closest voteable candidates for each voting block
+            vote_distribution = self._distribute_block_votes(block, local_candidates)
+
+            # Create a ballot for every candidate who got a share of this block's votes
+            for c_id, votes in vote_distribution.items():
+                if votes > 0:
+                    ballots.append(
+                        Ballot(
+                            district_id=block.district_id,
+                            population_weight=votes,
+                            choices=[c_id]
+                        )
                     )
-                )
 
         return ballots
     

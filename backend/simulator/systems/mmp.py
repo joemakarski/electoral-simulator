@@ -21,34 +21,36 @@ class MixedMemberProportionalRepresentation(ElectoralSystem):
             
             # 1. The local vote
             local_candidates = [c for c in candidates if c.district_id == block.district_id]
-            closest_local = None
             if local_candidates:
-                closest_local = min(
-                    local_candidates, 
-                    key=lambda c: calculate_distance(block.positions, c.positions)
-                )
+                # Distribute along closest voteable candidates for each voting block
+                local_distribution = self._distribute_block_votes(block, local_candidates)
+
+                # Create a ballot for every candidate who got a share of this block's votes
+                for (c_id, votes) in local_distribution.items():
+                    if votes > 0:
+                        ballots.append(
+                            Ballot(
+                                district_id=block.district_id,
+                                population_weight=votes,
+                                choices=[c_id, ""]
+                            )
+                        )
             
             # 2. The party list vote
             list_candidates = [c for c in candidates if c.district_id is None]
-            closest_list = None
             if list_candidates:
-                closest_list = min(
-                    list_candidates, 
-                    key=lambda c: calculate_distance(block.positions, c.positions)
-                )
+                list_distribution = self._distribute_block_votes(block, list_candidates)
 
-            # Winner gets all the voting block's votes
-            if closest_local or closest_list: # Changed to OR
-                ballots.append(
-                    Ballot(
-                        district_id=block.district_id,
-                        population_weight=block.population,
-                        choices=[
-                            closest_local.id if closest_local else "", 
-                            closest_list.id if closest_list else ""
-                        ]
-                    )
-                )
+                # Create a ballot for every candidate who got a share of this block's votes
+                for (c_id, votes) in list_distribution.items():
+                    if votes > 0:
+                        ballots.append(
+                            Ballot(
+                                district_id=block.district_id,
+                                population_weight=votes,
+                                choices=["", c_id]
+                            )
+                        )
 
         return ballots
 
