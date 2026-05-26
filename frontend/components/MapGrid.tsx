@@ -29,26 +29,54 @@ export default function MapGrid() {
     const hasSelection = selectedDistrictId !== null;
 
     // If an election has run, paint using winning party colors
+    // LIVE RESULTS VIEW: Paint using proportional party colors
     if (results && results.winners) {
       const districtKey = `d${tile.id}`;
       const winnersList = results.winners[districtKey] as string[] | undefined;
       
       if (winnersList && winnersList.length > 0) {
-        const primaryWinnerId = winnersList[0];
-        const winnerMeta = candidates.find(c => c.id === primaryWinnerId);
-        const winningParty = parties.find(p => p.id === winnerMeta?.party_id);
+        // Tally the colors of the winning candidates
+        const colorTally: Record<string, number> = {};
+        winnersList.forEach(wId => {
+          const winnerMeta = candidates.find(c => c.id === wId);
+          const winningParty = parties.find(p => p.id === winnerMeta?.party_id);
+          const color = winningParty?.color || "#9ca3af"; // Fallback to gray for independents
+          
+          colorTally[color] = (colorTally[color] || 0) + 1;
+        });
 
-        if (winningParty) {
-          let stateClass = "text-white font-black drop-shadow shadow-md";
-          if (isSelected) stateClass += " ring-4 ring-black/70 scale-95 z-10";
-          else if (hasSelection) stateClass += " opacity-25 grayscale-[40%] scale-95";
+        // 2. Build the CSS linear-gradient string with hard stops
+        const totalWinners = winnersList.length;
+        let gradientStops: string[] = [];
+        let currentPct = 0;
 
-          return {
-            className: stateClass,
-            style: { backgroundColor: winningParty.color },
-            content: tile.num_seats
-          };
-        }
+        // Sort by seat count descending so the largest party is the primary color
+        const sortedColors = Object.keys(colorTally).sort((a, b) => colorTally[b] - colorTally[a]);
+
+        sortedColors.forEach(color => {
+          const sharePct = (colorTally[color] / totalWinners) * 100;
+          const nextPct = currentPct + sharePct;
+          
+          // Add hard stops for crisp stripes: "color start%, color end%"
+          gradientStops.push(`${color} ${currentPct}%`, `${color} ${nextPct}%`);
+          currentPct = nextPct;
+        });
+
+        // Apply gradient if multiple colors, otherwise just use a solid background color
+        const dynamicStyle = sortedColors.length > 1 
+          ? { backgroundImage: `linear-gradient(135deg, ${gradientStops.join(', ')})` }
+          : { backgroundColor: sortedColors[0] };
+
+        // 3. Apply selection states
+        let stateClass = "text-white font-black drop-shadow shadow-md";
+        if (isSelected) stateClass += " ring-4 ring-black/70 scale-95 z-10";
+        else if (hasSelection) stateClass += " opacity-25 grayscale-[40%] scale-95";
+
+        return {
+          className: stateClass,
+          style: dynamicStyle,
+          content: tile.num_seats
+        };
       }
     }
 
