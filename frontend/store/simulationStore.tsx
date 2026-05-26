@@ -2,6 +2,7 @@ import { create } from 'zustand'
 
 const CANDIDATE_LIST_SIZE = 15
 const CANDIDATE_FUZZ = 0.10;
+const VOTER_FUZZ = 0.10;
 
 export type PositionVector = Record<string, number>;
 
@@ -10,7 +11,7 @@ export type DistrictTile = {
     isActive: boolean;
     name: string;
     num_seats: number;
-    demographicProfileId: string;
+    demographics: Record<string, number>;
 };
 export type Party = { 
     id: string; 
@@ -69,6 +70,12 @@ interface SimulationState {
 
     candidates: Candidate[];
     generateCandidates: () => void;
+
+    // Fuzzing
+    candidateFuzzLevel: number;
+    setCandidateFuzzLevel: (level: number) => void;
+    voterFuzzLevel: number;
+    setVoterFuzzLevel: (level: number) => void;
 }
 
 export const useSimulationStore = create<SimulationState>((set, get) => ({
@@ -78,7 +85,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
         isActive: false, 
         name: `District ${i + 1}`, 
         num_seats: 1, 
-        demographicProfileId: "URBAN" // Default fallback
+        demographics: {}
     })),
 
     toggleTileActive: (id) => set((state) => ({
@@ -189,5 +196,10 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
         });
 
         set({ candidates: newCandidates });
-    }
+    },
+
+    candidateFuzzLevel: CANDIDATE_FUZZ,
+    setCandidateFuzzLevel: (level) => set({candidateFuzzLevel: level}),
+    voterFuzzLevel: VOTER_FUZZ,
+    setVoterFuzzLevel: (level) => {console.log(level); set({voterFuzzLevel: level})},
 }));

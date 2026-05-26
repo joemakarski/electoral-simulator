@@ -32,8 +32,10 @@ export default function DistrictResults() {
   let districtWinners: string[] = [];
 
   if (hasResults) {
-    const districtData = results.results.local_votes[districtKey];
-    const totalVotes = demographicProfiles.find(p => p.id === district.demographicProfileId)?.populationPerTile ?? 1
+    const districtData = results.results.local_votes[districtKey] as Record<string, number>;
+    const values = Object.values(districtData) as number[];
+
+    const totalVotes = values.reduce((sum, v) => sum + v, 0) || 1;
     
     districtWinners = results.winners?.[districtKey] || [];
 
@@ -76,12 +78,26 @@ export default function DistrictResults() {
 
       {/* Demographic Editor */}
       <div className="mb-6">
-        <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">
-          Demographic type: {
-      demographicProfiles.find(p => p.id === district.demographicProfileId)?.name 
-      ?? "None"
-    }
-        </label>
+        <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">Voter Makeup</label>
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(district.demographics || {}).map(([pId, pct]) => {
+            const profile = demographicProfiles.find(p => p.id === pId);
+            if (!profile || pct === 0) return null;
+            return (
+              <span 
+                key={pId} 
+                className="text-xs font-bold px-2 py-1 rounded border shadow-sm" 
+                style={{ 
+                  backgroundColor: `${profile.color}15`, // 15% opacity background
+                  color: profile.color, 
+                  borderColor: `${profile.color}40` 
+                }}
+              >
+                {profile.name}: {pct}%
+              </span>
+            )
+          })}
+        </div>
       </div>
 
       {/* Render list or chart based on whether there are results */}

@@ -5,19 +5,13 @@ import { useSimulationStore } from "@/store/simulationStore";
 
 export default function SimulationControls() {
   const { 
-    grid, 
-    axes,
-    parties,
-    addParty,
-    removeParty,
-    updatePartyPosition,
-    candidates, 
-    generateCandidates, 
-    activeSystem, 
-    setActiveSystem, 
-    setResults, 
-    setNationLocked,
-    demographicProfiles
+    grid, axes, parties,
+    addParty, removeParty, updatePartyPosition,
+    candidates, generateCandidates, 
+    activeSystem, setActiveSystem, 
+    setResults, setNationLocked, demographicProfiles,
+    candidateFuzzLevel, setCandidateFuzzLevel,
+    voterFuzzLevel, setVoterFuzzLevel
   } = useSimulationStore();
 
   const [loading, setLoading] = useState(false);
@@ -58,18 +52,24 @@ export default function SimulationControls() {
     }));
 
     // Format voters for Django
-    const generatedVoters = activeDistricts.map(tile => {
-      const profile = demographicProfiles.find(p => p.id === tile.demographicProfileId);
-      
-      const defaultPositions = axes.reduce((acc, axis) => ({ ...acc, [axis]: 0.0 }), {});
-      const finalPositions = profile ? { ...profile.positions } : defaultPositions;
-      const finalPopulation = profile ? profile.populationPerTile : 1000;
+    const generatedVoters = activeDistricts.flatMap(tile => {
+      return Object.entries(tile.demographics || {}).map(([profileId, percentage]) => {
+        const profile = demographicProfiles.find(p => p.id === profileId);
+        
+        const defaultPositions = axes.reduce((acc, axis) => ({ ...acc, [axis]: 0.0 }), {});
+        const finalPositions = profile ? { ...profile.positions } : defaultPositions;
+        
+        // Multiply the archetype's base population by the percentage the user assigned
+        const basePop = profile ? profile.populationPerTile : 1000;
+        const finalPopulation = Math.floor(basePop * (percentage / 100));
 
-      return {
-        population: finalPopulation,
-        positions: finalPositions, 
-        district_id: `d${tile.id}`
-      };
+        return {
+          population: finalPopulation,
+          positions: finalPositions, 
+          district_id: `d${tile.id}`,
+          fuzz_level: voterFuzzLevel
+        };
+      }).filter(v => v.population > 0);
     });
 
     const payload = {
@@ -80,6 +80,7 @@ export default function SimulationControls() {
     };
 
     try {
+      console.log(payload)
       const response = await fetch("http://localhost:8000/api/simulate/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -145,9 +146,39 @@ export default function SimulationControls() {
           </button>
         </div>
 
+        {/* Simulation Variance Controls */}
+      <div className="bg-gray-50 p-4 rounded-lg border shadow-sm">
+        <h3 className="text-sm font-bold text-gray-700 mb-4 border-b pb-2">Variance</h3>
+        
+        <div className="flex flex-col gap-4">
+          <div>
+            <div className="flex justify-between text-xs font-bold text-gray-600 mb-1">
+              <span>Party Division</span>
+              <span>{Math.round(candidateFuzzLevel * 100)}%</span>
+            </div>
+            <input 
+              type="range" min="0" max="0.5" step="0.01" 
+              value={candidateFuzzLevel} onChange={(e) => setCandidateFuzzLevel(parseFloat(e.target.value))}
+              className="w-full accent-indigo-600"
+            />
+          </div>
+
+          <div>
+            <div className="flex justify-between text-xs font-bold text-gray-600 mb-1">
+              <span>Voter Spread</span>
+              <span>{Math.round(voterFuzzLevel * 100)}%</span>
+            </div>
+            <input 
+              type="range" min="0" max="0.5" step="0.01" 
+              value={voterFuzzLevel} onChange={(e) => {setVoterFuzzLevel(parseFloat(e.target.value))}}
+              className="w-full accent-emerald-600"
+            />
+          </div>
+        </div>
+      </div>
 
         {/* PARTY LIST */}
-        <div className="flex flex-col gap-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+        <div className="flex flex-col gap-4 max-h-[400px] overflow-y-auto mt-4 pr-2 custom-scrollbar">
           {parties.length === 0 && <p className="text-sm text-gray-500 italic">No parties created.</p>}
           
           {parties.map((party) => (
