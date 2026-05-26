@@ -1,4 +1,7 @@
 import { create } from 'zustand'
+import { faker } from '@faker-js/faker'
+
+faker.seed(100)
 
 const CANDIDATE_LIST_SIZE = 15
 const CANDIDATE_FUZZ = 0.10;
@@ -173,7 +176,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
             for (let i = 0; i < CANDIDATE_LIST_SIZE; i++) {
                 newCandidates.push({ 
                     id: `c_${party.id}_national_${i}`, 
-                    name: `National List #${i+1}`, 
+                    name: faker.person.fullName(), 
                     party_id: party.id, 
                     positions: { ...party.basePositions }, 
                     district_id: null 
@@ -185,7 +188,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
                 for (let i = 0; i < district.num_seats; i++) {
                     newCandidates.push({ 
                         id: `c_${party.id}_d${district.id}_${i}`, 
-                        name: `Local #${i+1} of ${district.name}`, 
+                        name: faker.person.fullName(), 
                         party_id: party.id, 
                         positions: { ...fuzzPositions(party.basePositions) }, 
                         district_id: `d${district.id}`
