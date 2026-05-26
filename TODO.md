@@ -1,18 +1,16 @@
 # TODO:
 
-- [ ] User-controlled candidate fuzz/randomness
-- [ ] User-controlled voter fuzz/randomness
-- [ ] Support multiple demographics per district
-- [ ] Fake names with Faker
+- [ ] Abolish alerts
+- [ ] Add seed for randomness
 - [ ] Make unrenamable things renamable
-- [ ] Assign candidates to districts when they are locked, not when they are locked
+- [ ] Auto-assign of candidates happen when run simulation clicked - think about this
+- [ ] Fuzz is global but exists block-level - think about this
+- [ ] IDs should be translated to names in Notes
 - [ ] Implement more systems and implement visuals that show transfers if involved:
     - [ ] STV/AV
     - [ ] Majority Bonus
     - [ ] Two round/Runoff
     - [ ] Block voting
-- [ ] Better view of legislature composition
-- [ ] User-controlled parliamentary threshold
-- [ ] User-controlled proportional percentage
-- [ ] Be able to see party strengths as shades of colour on map
+- [ ] Better view of legislature composition in results dashboard
+- [ ] User-controlled parliamentary threshold and proportional percentage
 - [ ] Exportable and importable settings as JSON

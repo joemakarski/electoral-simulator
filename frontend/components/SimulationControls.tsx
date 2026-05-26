@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSimulationStore } from "@/store/simulationStore";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const BASE_DISTRICT_POPULATION = 10000
 
@@ -83,7 +85,7 @@ export default function SimulationControls() {
 
     try {
       console.log(payload)
-      const response = await fetch("http://localhost:8000/api/simulate/", {
+      const response = await fetch(`${API_URL}/api/simulate/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),

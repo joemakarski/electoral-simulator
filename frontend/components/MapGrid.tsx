@@ -145,7 +145,7 @@ export default function MapGrid() {
         {!isNationLocked ? (
           <span className="text-neutral-400">Click tiles to create and edit districts</span>
         ) : selectedDistrictId !== null ? (
-          <span className="text-orange-400">Inspecting District {selectedDistrictId + 1}</span>
+          <span className="text-blue-600">Inspecting District {selectedDistrictId + 1}</span>
         ) : (
           <span className="text-neutral-600"> Click an active district to inspect </span>
         )}
