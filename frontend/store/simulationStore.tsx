@@ -4,8 +4,6 @@ import { faker } from '@faker-js/faker'
 faker.seed(100)
 
 const CANDIDATE_LIST_SIZE = 15
-const CANDIDATE_FUZZ = 0.10;
-const VOTER_FUZZ = 0.10;
 
 export type PositionVector = Record<string, number>;
 
@@ -149,20 +147,23 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
         const newDemographics = state.demographicProfiles.map(d => ({ ...d, positions: { ...d.positions, [axis]: 0.0 } }));
         return { axes: [...state.axes, axis], parties: newParties, demographicProfiles: newDemographics };
     }),
-    removeAxis: (axis) => set((state) => {
-        // Prevent deleting all axes to avoid UI crashes
-        if (state.axes.length <= 1) return state; 
-        
-        const removeKey = (obj: PositionVector) => {
-            const newObj = { ...obj };
-            delete newObj[axis];
-            return newObj;
-        };
+    removeAxis: (axisToRemove) => set((state) => {
+        const cleanedParties = state.parties.map(party => {
+            const newPositions = { ...party.basePositions };
+            delete newPositions[axisToRemove];
+            return { ...party, basePositions: newPositions };
+        });
+
+        const cleanedDemographics = state.demographicProfiles.map(demo => {
+            const newPositions = { ...demo.positions };
+            delete newPositions[axisToRemove];
+            return { ...demo, positions: newPositions };
+        });
 
         return { 
-            axes: state.axes.filter(a => a !== axis),
-            parties: state.parties.map(p => ({ ...p, basePositions: removeKey(p.basePositions) })),
-            demographicProfiles: state.demographicProfiles.map(d => ({ ...d, positions: removeKey(d.positions) }))
+            axes: state.axes.filter(a => a !== axisToRemove),
+            parties: cleanedParties,
+            demographicProfiles: cleanedDemographics
         };
     }),
 
@@ -173,7 +174,28 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     ] as DemographicProfile[],
     
     addDemographicProfile: (profile) => set((state) => ({ demographicProfiles: [...state.demographicProfiles, profile] })),
-    removeDemographicProfile: (id) => set((state) => ({ demographicProfiles: state.demographicProfiles.filter(p => p.id !== id) })),
+    removeDemographicProfile: (idToRemove) => set((state) => {
+        const cleanedGrid = state.grid.map(tile => {
+            if (!tile.demographics || tile.demographics[idToRemove] === undefined) return tile;
+            
+            const newDemographics = { ...tile.demographics };
+            delete newDemographics[idToRemove];
+            return { ...tile, demographics: newDemographics };
+        });
+
+        let newMemory = state.lastUsedDistrictConfig;
+        if (newMemory && newMemory.demographics && newMemory.demographics[idToRemove] !== undefined) {
+            const cleanedMemoryDemographics = { ...newMemory.demographics };
+            delete cleanedMemoryDemographics[idToRemove];
+            newMemory = { ...newMemory, demographics: cleanedMemoryDemographics };
+        }
+
+        return { 
+            demographicProfiles: state.demographicProfiles.filter((p) => p.id !== idToRemove),
+            grid: cleanedGrid,
+            lastUsedDistrictConfig: newMemory
+        };
+    }),
     updateDemographicPosition: (profileId, axis, value) => set((state) => ({ 
         demographicProfiles: state.demographicProfiles.map(p => p.id===profileId ? { ...p, positions: { ...p.positions, [axis]: value } } : p) 
     })),
@@ -188,7 +210,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     // Candidate generator
     candidates: [],
     generateCandidates: () => {
-        const { parties, grid, axes } = get();
+        const { parties, grid, axes, candidateFuzzLevel, voterFuzzLevel } = get();
         const activeDistricts = grid.filter(t => t.isActive);
         const newCandidates: Candidate[] = [];
         
@@ -196,7 +218,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
             const fuzzed: PositionVector = {};
             axes.forEach(axis => {
                 const base = basePositions[axis] || 0;
-                const deviation = (Math.random() - 0.5) * CANDIDATE_FUZZ
+                const deviation = (Math.random() - 0.5) * candidateFuzzLevel
                 fuzzed[axis] = Math.max(-1, Math.min(1, base+deviation));
             })
             return fuzzed
@@ -231,9 +253,9 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
         set({ candidates: newCandidates });
     },
 
-    candidateFuzzLevel: CANDIDATE_FUZZ,
+    candidateFuzzLevel: 0.10,
     setCandidateFuzzLevel: (level) => set({candidateFuzzLevel: level}),
-    voterFuzzLevel: VOTER_FUZZ,
+    voterFuzzLevel: 0.10,
     setVoterFuzzLevel: (level) => {console.log(level); set({voterFuzzLevel: level})},
 
     lastUsedDistrictConfig: null,
