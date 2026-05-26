@@ -147,7 +147,7 @@ export default function MapGrid() {
         ) : selectedDistrictId !== null ? (
           <span className="text-orange-400">Inspecting District {selectedDistrictId + 1}</span>
         ) : (
-          <span className="text-neutral-600">Click an active district to inspect</span>
+          <span className="text-neutral-600"> Click an active district to inspect </span>
         )}
       </div>
     </div>

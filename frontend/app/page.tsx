@@ -64,7 +64,7 @@ export default function Home() {
                      builderTab === 'axes' ? 'bg-white text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 hover:bg-gray-200'
                    }`}
                  >
-                   Positions
+                   1. Positions
                  </button>
                  <button 
                    onClick={() => setBuilderTab('voters')}
@@ -72,7 +72,7 @@ export default function Home() {
                      builderTab === 'voters' ? 'bg-white text-emerald-600 border-b-2 border-emerald-600' : 'text-gray-500 hover:bg-gray-200'
                    }`}
                  >
-                   Demographics
+                   2. Demographics
                  </button>
                  <button 
                    onClick={() => setBuilderTab('districts')}
@@ -80,7 +80,7 @@ export default function Home() {
                      builderTab === 'districts' ? 'bg-white text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:bg-gray-200'
                    }`}
                  >
-                   District
+                  3. District
                  </button>
                </div>
 

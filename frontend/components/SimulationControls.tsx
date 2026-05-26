@@ -109,7 +109,7 @@ export default function SimulationControls() {
             simTabs === 'parties' ? 'bg-white text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'
           }`}
         >
-          Parties
+          4. Parties
         </button>
         <button 
           onClick={() => setSimTab('options')}
@@ -117,7 +117,7 @@ export default function SimulationControls() {
             simTabs === 'options' ? 'bg-white text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'
           }`}
         >
-          Options
+          5. Election
         </button>
       </div>
 
