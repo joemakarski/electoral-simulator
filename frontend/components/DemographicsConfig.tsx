@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSimulationStore } from "@/store/simulationStore";
 
-export default function     DemographicsConfig() {
+export default function DemographicsConfig() {
   const { 
     demographicProfiles, 
     addDemographicProfile, 
@@ -14,7 +14,6 @@ export default function     DemographicsConfig() {
 
   const [newName, setNewName] = useState("");
   const [newColor, setNewColor] = useState("#10b981");
-  const [newPop, setNewPop] = useState<number>(1000);
 
   const handleAdd = () => {
     if (!newName.trim()) return;
@@ -24,7 +23,6 @@ export default function     DemographicsConfig() {
       id: `demo_${Date.now()}`,
       name: newName,
       color: newColor,
-      populationPerTile: newPop,
       positions: defaultPositions
     });
     setNewName("");
@@ -39,7 +37,7 @@ export default function     DemographicsConfig() {
 
       {/* Add Profile Form */}
       <div className="flex flex-col gap-3 mb-5 bg-gray-50 p-3 rounded border">
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <input 
             type="color" value={newColor} onChange={(e) => setNewColor(e.target.value)}
             className="w-10 h-10 p-1 border rounded cursor-pointer shrink-0" 
@@ -48,23 +46,9 @@ export default function     DemographicsConfig() {
             type="text" placeholder="Profile Name (e.g. Populist Base)..." value={newName}
             onChange={(e) => setNewName(e.target.value)} className="flex-1 p-2 border rounded text-sm"
           />
-        </div>
-        <div className="flex gap-2 items-center">
-          <span className="text-xs font-bold text-gray-500 uppercase">Pop/Tile:</span>
-          <input 
-            type="number" step="100" min="100" 
-            value={newPop===0 ? "" : newPop}
-            onChange={(e) => {
-              const safeValue = Number(e.target.value) || 0;
-              setNewPop(safeValue)
-            }} 
-            onBlur={() => {if (newPop<1) setNewPop(1000)}
-            }
-            className="w-24 p-2 border rounded text-sm"
-          />
           <button 
             onClick={handleAdd} disabled={!newName.trim()}
-            className="flex-1 bg-emerald-600 text-white font-bold rounded hover:bg-emerald-700 disabled:bg-gray-300"
+            className="px-4 py-2 bg-emerald-600 text-white font-bold rounded hover:bg-emerald-700 disabled:bg-gray-300 transition-colors"
           >
             Add
           </button>
@@ -72,14 +56,11 @@ export default function     DemographicsConfig() {
       </div>
 
       {/* Profiles List */}
-      <div className="flex flex-col gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+      <div className="flex flex-col gap-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
         {demographicProfiles.map((p) => (
           <div key={p.id} className="bg-white border rounded-lg p-4 shadow-sm shrink-0" style={{ borderLeft: `6px solid ${p.color}` }}>
             <div className="flex justify-between items-start mb-3">
-              <div>
-                <div className="font-bold text-gray-800">{p.name}</div>
-                <div className="text-xs text-gray-500">Population: {p.populationPerTile.toLocaleString()}</div>
-              </div>
+              <div className="font-bold text-gray-800">{p.name}</div>
               <button onClick={() => removeDemographicProfile(p.id)} className="text-gray-400 hover:text-red-500 font-bold">✕</button>
             </div>
             

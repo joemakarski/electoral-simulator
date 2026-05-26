@@ -30,7 +30,6 @@ export type DemographicProfile = {
     id: string; 
     name: string; 
     color: string; 
-    populationPerTile: number; 
     positions: PositionVector; 
 };
 
@@ -135,8 +134,8 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
 
     // Profiles and parties
     demographicProfiles: [ // default
-        { id: "URBAN", name: "Urban Progressive", color: "#63a31a", populationPerTile: 5000, positions: { Economy: -0.7, Social: -0.7 } },
-        { id: "RURAL", name: "Rural Conservative", color: "#012169", populationPerTile: 1000, positions: { Economy: 0.7, Social: 0.6 } }
+        { id: "URBAN", name: "Urban Progressive", color: "#63a31a", positions: { Economy: -0.7, Social: -0.7 } },
+        { id: "RURAL", name: "Rural Conservative", color: "#012169", positions: { Economy: 0.7, Social: 0.6 } }
     ] as DemographicProfile[],
     
     addDemographicProfile: (profile) => set((state) => ({ demographicProfiles: [...state.demographicProfiles, profile] })),

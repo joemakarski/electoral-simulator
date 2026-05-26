@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useSimulationStore } from "@/store/simulationStore";
 
+const BASE_DISTRICT_POPULATION = 10000
+
 export default function SimulationControls() {
   const { 
     grid, axes, parties,
@@ -59,9 +61,7 @@ export default function SimulationControls() {
         const defaultPositions = axes.reduce((acc, axis) => ({ ...acc, [axis]: 0.0 }), {});
         const finalPositions = profile ? { ...profile.positions } : defaultPositions;
         
-        // Multiply the archetype's base population by the percentage the user assigned
-        const basePop = profile ? profile.populationPerTile : 1000;
-        const finalPopulation = Math.floor(basePop * (percentage / 100));
+        const finalPopulation = Math.floor(BASE_DISTRICT_POPULATION * (percentage / 100));
 
         return {
           population: finalPopulation,
