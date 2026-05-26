@@ -78,6 +78,9 @@ interface SimulationState {
     setCandidateFuzzLevel: (level: number) => void;
     voterFuzzLevel: number;
     setVoterFuzzLevel: (level: number) => void;
+
+    // Cache
+    lastUsedDistrictConfig: { num_seats: number; demographics: Record<string, number> } | null;
 }
 
 export const useSimulationStore = create<SimulationState>((set, get) => ({
@@ -90,13 +93,41 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
         demographics: {}
     })),
 
-    toggleTileActive: (id) => set((state) => ({
-        grid: state.grid.map(t => t.id === id ? { ...t, isActive: !t.isActive } : t)
-    })),
+    toggleTileActive: (id) => set((state) => {
+        const tile = state.grid.find(t => t.id === id);
+        if (!tile) return state;
 
-    updateDistrictTile: (id, updates) => set((state) => ({
-        grid: state.grid.map(t => t.id === id ? { ...t, ...updates } : t)
-    })),
+        const isTurningOn = !tile.isActive;
+        // pull from memory if turning on
+        const newSeats = isTurningOn ? (state.lastUsedDistrictConfig?.num_seats || 1) : 1;
+        const newDemographics = isTurningOn ? (state.lastUsedDistrictConfig?.demographics || {}) : {};
+
+        return {
+            grid: state.grid.map(t => t.id === id ? { 
+                ...t, 
+                isActive: isTurningOn,
+                num_seats: newSeats,
+                demographics: newDemographics
+            } : t)
+        };
+    }),
+
+    updateDistrictTile: (id, updates) => set((state) => {
+        const currentTile = state.grid.find(t => t.id === id);
+        let newMemory = state.lastUsedDistrictConfig;
+
+        // Only update memory if the user actually edited seats or demographics
+        if (updates.num_seats !== undefined || updates.demographics !== undefined) {
+            newMemory = {
+                num_seats: updates.num_seats ?? currentTile?.num_seats ?? 1,
+                demographics: updates.demographics ?? currentTile?.demographics ?? {}
+            };
+        }
+        return {
+            grid: state.grid.map(t => t.id === id ? { ...t, ...updates } : t),
+            lastUsedDistrictConfig: newMemory // Update the memory
+        };
+    }),
 
     selectedDistrictId: null,
     setSelectedDistrictId: (id) => set({ selectedDistrictId: id }),
@@ -204,4 +235,6 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     setCandidateFuzzLevel: (level) => set({candidateFuzzLevel: level}),
     voterFuzzLevel: VOTER_FUZZ,
     setVoterFuzzLevel: (level) => {console.log(level); set({voterFuzzLevel: level})},
+
+    lastUsedDistrictConfig: null,
 }));
