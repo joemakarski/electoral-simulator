@@ -1,6 +1,7 @@
 'use client';
 
 import { useSimulationStore } from "@/store/simulationStore";
+import { CandidateResult } from "@/types";
 
 export default function DistrictResults() {
   const { 
@@ -28,7 +29,7 @@ export default function DistrictResults() {
   );
 
   // If there are results, get the candidate performances and winners
-  let candidatePerformance: any[] = [];
+  let candidatePerformance: CandidateResult[] = [];
   let districtWinners: string[] = [];
 
   if (hasResults) {

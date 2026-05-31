@@ -11,8 +11,6 @@ import {
 
 import { FAKER_SEED, CANDIDATE_LIST_SIZE } from '@/utils/constants'
 
-faker.seed(FAKER_SEED)
-
 interface SimulationState {
     // Map and District State
     grid: DistrictTile[];
@@ -189,6 +187,8 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     // Candidate generator
     candidates: [],
     generateCandidates: () => {
+        faker.seed(FAKER_SEED)
+
         const { parties, grid, axes, candidateFuzzLevel, voterFuzzLevel } = get();
         const activeDistricts = grid.filter(t => t.isActive);
         const newCandidates: Candidate[] = [];
@@ -235,7 +235,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     candidateFuzzLevel: 0.10,
     setCandidateFuzzLevel: (level) => set({candidateFuzzLevel: level}),
     voterFuzzLevel: 0.10,
-    setVoterFuzzLevel: (level) => {console.log(level); set({voterFuzzLevel: level})},
+    setVoterFuzzLevel: (level) => set({voterFuzzLevel: level}),
 
     lastUsedDistrictConfig: null,
 }));

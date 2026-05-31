@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useSimulationStore } from '@/store/simulationStore';
+import { DistrictTile } from '@/types';
 
 export default function MapGrid() {
   const { 
@@ -39,7 +40,7 @@ export default function MapGrid() {
   }, [selectedDistrictId, isNationLocked, toggleTileActive, setSelectedDistrictId]);
 
   // Helper to determine the classes and inline styles for each individual tile
-  const getTileProps = (tile: any) => {
+  const getTileProps = (tile: DistrictTile) => {
     // Inactive land is always a content-less box
     if (!tile.isActive) {
       const base = "bg-orange-100/60 text-gray-300 border-dashed border-gray-200";

@@ -25,6 +25,13 @@ export type Candidate = {
     positions: PositionVector; 
     district_id: string | null; 
 };
+export type CandidateResult = Candidate & {
+    votes: number;
+    percentage: number;
+    partyName: string;
+    color: string;
+    isWinner: boolean;
+  };
 export type VoterBlock = {
     population: number;
     positions: PositionVector;
