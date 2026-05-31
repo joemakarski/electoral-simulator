@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useSimulationStore } from "@/store/simulationStore";
 import { API_URL, DEFAULT_PARTY_COLOR } from "@/utils/constants";
 import { buildSimulationPayload } from "@/utils/buildPayload";
+import PositionSliders from "@/components/PositionSliders";
 
 export default function SimulationControls() {
   const { 
@@ -136,22 +137,14 @@ export default function SimulationControls() {
 
                   <div className="font-bold text-lg mb-4 pb-3 border-b border-gray-100 text-gray-800 pr-8 break-words leading-tight">{party.name}</div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                    {axes.map(axis => (
-                      <div key={axis} className="text-sm">
-                        <div className="flex justify-between font-semibold mb-1.5 text-gray-600">
-                          <span>{axis}</span>
-                          <span className="text-gray-500">{(party.basePositions[axis] || 0).toFixed(2)}</span>
-                        </div>
-                        <input 
-                          type="range" min="-1" max="1" step="0.05" 
-                          value={party.basePositions[axis] || 0}
-                          onChange={(e) => updatePartyPosition(party.id, axis, parseFloat(e.target.value))}
-                          className="w-full accent-gray-700 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                        />
-                      </div>
-                    ))}
-                  </div>
+                  <PositionSliders
+                    axes={axes}
+                    positions={party.basePositions}
+                    id={party.id}
+                    colorClass="accent-gray-700"
+                    onPositionChange={updatePartyPosition}
+                  />
+
                 </div>
               ))}
             </div>

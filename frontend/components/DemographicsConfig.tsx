@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSimulationStore } from "@/store/simulationStore";
+import PositionSliders from "@/components/PositionSliders";
 
 export default function DemographicsConfig() {
   const { 
@@ -61,7 +62,7 @@ export default function DemographicsConfig() {
         {demographicProfiles.map((p) => (
           <div key={p.id} className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm shrink-0" style={{ borderLeft: `6px solid ${p.color}` }}>
             
-            {/* Header: Added padding and a subtle bottom border to anchor it */}
+            {/* Header: Profile name */}
             <div className="flex justify-between items-start mb-4 pb-3 border-b border-gray-100">
               <div className="font-bold text-gray-800 break-words pr-4 leading-tight">{p.name}</div>
               <button 
@@ -72,22 +73,14 @@ export default function DemographicsConfig() {
               </button>
             </div>
             
-            {/* FIX: Changed from flex-col to a 2-column grid! */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-              {axes.map(axis => (
-                <div key={axis} className="text-sm">
-                  <div className="flex justify-between font-semibold mb-1.5 text-gray-600">
-                    <span>{axis}</span>
-                    <span>{(p.positions[axis] || 0).toFixed(2)}</span>
-                  </div>
-                  <input 
-                    type="range" min="-1" max="1" step="0.05" value={p.positions[axis] || 0}
-                    onChange={(e) => updateDemographicPosition(p.id, axis, parseFloat(e.target.value))}
-                    className="w-full accent-emerald-600 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                </div>
-              ))}
-            </div>
+            {/* Profile sliders */}
+            <PositionSliders
+              axes={axes}
+              positions={p.positions}
+              id={p.id}
+              colorClass="accent-emerald-600"
+              onPositionChange={updateDemographicPosition}
+            />
             
           </div>
         ))}
