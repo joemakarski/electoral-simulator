@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useSimulationStore } from '@/store/simulationStore';
 
 export default function MapGrid() {
@@ -14,12 +15,37 @@ export default function MapGrid() {
     results
   } = useSimulationStore();
 
+  useEffect(() => {
+    // Shortcut for deleting district
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isNationLocked && selectedDistrictId !== null) {
+        
+        // Safety check for input boxes
+        const activeTag = document.activeElement?.tagName;
+        if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
+          return;
+        }
+
+        // listen for Backspace or Delete
+        if (e.key === 'Backspace' || e.key === 'Delete') {
+          toggleTileActive(selectedDistrictId);
+          setSelectedDistrictId(null);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedDistrictId, isNationLocked, toggleTileActive, setSelectedDistrictId]);
+
   // Helper to determine the classes and inline styles for each individual tile
   const getTileProps = (tile: any) => {
-    // Inactive land is always an empty box
+    // Inactive land is always a content-less box
     if (!tile.isActive) {
+      const base = "bg-orange-100/60 text-gray-300 border-dashed border-gray-200";
+      const hover = isNationLocked ? "" : "cursor-pointer hover:bg-orange-200/50"
       return { 
-        className: "bg-orange-100/60 text-gray-300 border-dashed border-gray-200 cursor-pointer hover:bg-orange-200/40", 
+        className: `${base} ${hover}`, 
         style: {},
         content: "" 
       };
@@ -29,7 +55,6 @@ export default function MapGrid() {
     const hasSelection = selectedDistrictId !== null;
 
     // If an election has run, paint using winning party colors
-    // LIVE RESULTS VIEW: Paint using proportional party colors
     if (results && results.winners) {
       const districtKey = `d${tile.id}`;
       const winnersList = results.winners[districtKey] as string[] | undefined;
@@ -45,7 +70,7 @@ export default function MapGrid() {
           colorTally[color] = (colorTally[color] || 0) + 1;
         });
 
-        // 2. Build the CSS linear-gradient string with hard stops
+        // Build the CSS linear-gradient string with hard stops
         const totalWinners = winnersList.length;
         let gradientStops: string[] = [];
         let currentPct = 0;
@@ -68,7 +93,7 @@ export default function MapGrid() {
           : { backgroundColor: sortedColors[0] };
 
         // 3. Apply selection states
-        let stateClass = "text-white font-black drop-shadow shadow-md";
+        let stateClass = "text-white font-black drop-shadow shadow-md cursor-pointer";
         if (isSelected) stateClass += " ring-4 ring-black/70 scale-95 z-10";
         else if (hasSelection) stateClass += " opacity-25 grayscale-[40%] scale-95";
 
@@ -81,7 +106,7 @@ export default function MapGrid() {
     }
 
     // Before simulation, show standard active district styling
-    let baseClass = "bg-orange-300/75 text-black font-bold shadow-md transition-all";
+    let baseClass = "bg-orange-300/75 text-black font-bold shadow-md transition-all cursor-pointer";
     if (isSelected) {
       baseClass += " ring-4 ring-orange-300 scale-95 z-10";
     } else if (hasSelection) {
@@ -143,9 +168,9 @@ export default function MapGrid() {
       {/* Contextual status */}
       <div className="mt-4 text-sm text-gray-500 font-bold px-3 py-1.5">
         {!isNationLocked ? (
-          <span className="text-neutral-400">Click tiles to create and edit districts</span>
+          <span className="text-neutral-400">Click tiles to create and edit districts. Backspace to delete.</span>
         ) : selectedDistrictId !== null ? (
-          <span className="text-blue-600">Inspecting District {selectedDistrictId + 1}</span>
+          <span className="text-indigo-600">Inspecting District {selectedDistrictId + 1}</span>
         ) : (
           <span className="text-neutral-600"> Click an active district to inspect </span>
         )}

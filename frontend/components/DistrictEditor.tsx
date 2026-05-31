@@ -80,7 +80,7 @@ export default function DistrictEditor() {
             <div className="flex justify-between items-center mb-5 border-b border-gray-200 pb-3">
               <h3 className="text-sm font-bold text-indigo-600 uppercase tracking-wider">Settings</h3>
               <button 
-                onClick={() => { toggleTileActive(selectedDistrictId!); setSelectedDistrictId(null); }}
+                onClick={handleDeleteDistrict}
                 className="text-xs text-red-500 hover:text-white font-bold px-3 py-1.5 rounded-md hover:bg-red-500 transition-colors border border-red-200"
               >
                 Delete
