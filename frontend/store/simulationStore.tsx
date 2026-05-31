@@ -1,38 +1,17 @@
 import { create } from 'zustand'
 import { faker } from '@faker-js/faker'
 
-faker.seed(100)
+import {
+    DistrictTile,
+    DemographicProfile,
+    Party,
+    Candidate,
+    PositionVector,
+} from '@/types/index'
 
-const CANDIDATE_LIST_SIZE = 15
+import { FAKER_SEED, CANDIDATE_LIST_SIZE } from '@/utils/constants'
 
-export type PositionVector = Record<string, number>;
-
-export type DistrictTile = {
-    id: number;
-    isActive: boolean;
-    name: string;
-    num_seats: number;
-    demographics: Record<string, number>;
-};
-export type Party = { 
-    id: string; 
-    name: string; 
-    color: string; 
-    basePositions: PositionVector; 
-};
-export type Candidate = { 
-    id: string; 
-    name: string; 
-    party_id: string; 
-    positions: PositionVector; 
-    district_id: string | null; 
-};
-export type DemographicProfile = { 
-    id: string; 
-    name: string; 
-    color: string; 
-    positions: PositionVector; 
-};
+faker.seed(FAKER_SEED)
 
 interface SimulationState {
     // Map and District State

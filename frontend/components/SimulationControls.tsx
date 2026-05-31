@@ -3,15 +3,13 @@
 import { useState } from "react";
 import { useSimulationStore } from "@/store/simulationStore";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
-const BASE_DISTRICT_POPULATION = 10000
+import { API_URL, BASE_DISTRICT_POPULATION } from "@/utils/constants";
 
 export default function SimulationControls() {
   const { 
     grid, axes, parties,
     addParty, removeParty, updatePartyPosition,
-    candidates, generateCandidates, 
+    generateCandidates, 
     activeSystem, setActiveSystem, 
     setResults, setNationLocked, demographicProfiles,
     candidateFuzzLevel, setCandidateFuzzLevel,
