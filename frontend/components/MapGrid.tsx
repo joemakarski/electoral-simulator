@@ -169,11 +169,11 @@ export default function MapGrid() {
       {/* Contextual status */}
       <div className="mt-4 text-sm text-gray-500 font-bold px-3 py-1.5">
         {!isNationLocked ? (
-          <span className="text-neutral-400">Click tiles to create and edit districts. Backspace to delete.</span>
+          <span className="text-neutral-400">Click tiles to create and edit districts. Delete using backspace.</span>
         ) : selectedDistrictId !== null ? (
           <span className="text-indigo-600">Inspecting District {selectedDistrictId + 1}</span>
         ) : (
-          <span className="text-neutral-600"> Click an active district to inspect </span>
+          <span className="text-neutral-600"> Click an active district to inspect it.</span>
         )}
       </div>
     </div>

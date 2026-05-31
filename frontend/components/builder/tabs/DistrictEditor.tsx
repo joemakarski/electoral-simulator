@@ -105,12 +105,15 @@ export default function DistrictEditor() {
                 <div className="w-24">
                   <label className="text-xs font-bold text-gray-500 uppercase block mb-1.5">Seats</label>
                   <input 
-                    type="number" min="1" value={selectedTile.num_seats === 0 ? "" : selectedTile.num_seats}
+                    type="number" min="1" max="256" value={selectedTile.num_seats === 0 ? "" : selectedTile.num_seats}
                     onChange={(e) => {
                       const val = parseInt(e.target.value);
                       updateDistrictTile(selectedTile.id, { num_seats: isNaN(val) ? 0 : val });
                     }}
-                    onBlur={() => { if (selectedTile.num_seats < 1) updateDistrictTile(selectedTile.id, { num_seats: 1 }); }}
+                    onBlur={() => { 
+                      if (selectedTile.num_seats < 1) updateDistrictTile(selectedTile.id, { num_seats: 1 }); 
+                      if (selectedTile.num_seats > 256) updateDistrictTile(selectedTile.id, { num_seats: 256 }); 
+                    }}
                     className="w-full p-2.5 border border-gray-300 rounded-md font-semibold text-gray-800 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                   />
                 </div>

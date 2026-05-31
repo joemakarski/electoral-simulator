@@ -44,7 +44,7 @@ export default function DemographicsConfig() {
             className="w-10 h-10 p-1 border border-gray-300 rounded-md cursor-pointer shrink-0" 
           />
           <input 
-            type="text" placeholder="Demographic Name..." value={newName}
+            type="text" placeholder="e.g. Traditionalists..." value={newName}
             onChange={(e) => setNewName(e.target.value)} 
             className="flex-1 p-2.5 min-w-40 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
           />
