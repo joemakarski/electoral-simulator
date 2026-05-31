@@ -1,6 +1,7 @@
 'use client';
 
 import { useSimulationStore } from "@/store/simulationStore";
+import { BASE_DISTRICT_POPULATION } from "@/utils/constants";
 
 export default function DistrictEditor() {
   const {
@@ -121,6 +122,9 @@ export default function DistrictEditor() {
 
               {/* THE MELTING POT EDITOR */}
               <div className="pt-2">
+                <div className="flex mb-3">
+                  <label className="text-xs font-bold text-gray-500 uppercase">Population = {BASE_DISTRICT_POPULATION.toLocaleString()}</label>
+                </div>
                 <div className="flex justify-between items-end mb-3">
                   <label className="text-xs font-bold text-gray-500 uppercase">Voter Makeup</label>
                   <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${currentSum === 100 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>

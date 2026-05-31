@@ -3,14 +3,18 @@
 import { useSimulationStore } from "@/store/simulationStore";
 
 export default function ElectionConfig() {
-  
-  //         {simTabs === 'options' && (
 
   const { 
     activeSystem, setActiveSystem,
     candidateFuzzLevel, setCandidateFuzzLevel,
     voterFuzzLevel, setVoterFuzzLevel,
   } = useSimulationStore()
+
+  const systemDescriptions: Record<string, string> = {
+    "plurality": "Voters vote for one candidate. Candidates with the N most votes in each district win, where N is the number of seats.",
+    "listpr": "Individual candidate votes determine who within the parties get elected, but seats are split based on the parties' proportions of the vote. ",
+    "mmp": "Voters vote for a candidate and party. Party list candidates are added onto the plurality-based district results in a way that can compensate for disproportionality."
+  }
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
@@ -28,13 +32,15 @@ export default function ElectionConfig() {
           <option value="mmp">Mixed-Member Proportional (MMP)</option>
           <option disabled value="stv">To-do: Single Transferable Vote</option>
         </select>
+        <p className="text-xs text-gray-500 mt-2 leading-snug mt-2">
+          {systemDescriptions[activeSystem] || "An electoral system can affect the way voters vote, and how ballots are counted."}
+        </p>
       </div>
 
       {/* Simulation Variance Controls */}
-      <div className="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm mt-2">
+      <div className="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm">
         <div className="flex justify-between items-center border-b border-gray-200 pb-3 mb-5">
           <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Deviations</h3>
-          <span className="text-xs font-semibold text-gray-500">via Normal Distribution</span>
         </div>
         
         <div className="flex flex-col gap-5">
@@ -48,6 +54,10 @@ export default function ElectionConfig() {
               value={candidateFuzzLevel} onChange={(e) => setCandidateFuzzLevel(parseFloat(e.target.value))}
               className="w-full accent-indigo-600 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
             />
+            <p className="text-xs text-gray-500 mt-2 leading-snug">
+              Controls how much individual candidates within the same party can deviate from the party's base positions. <br></br>
+              Higher values introduce a wider uniform spread.
+            </p>
           </div>
 
           <div>
@@ -60,6 +70,10 @@ export default function ElectionConfig() {
               value={voterFuzzLevel} onChange={(e) => setVoterFuzzLevel(parseFloat(e.target.value))}
               className="w-full accent-emerald-600 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
             />
+            <p className="text-xs text-gray-500 mt-2 leading-snug">
+              Controls random variation in voter ideology. <br></br>
+              Higher values apply a wider normal-distribution deviation to each voter block.
+            </p>
           </div>
         </div>
       </div>

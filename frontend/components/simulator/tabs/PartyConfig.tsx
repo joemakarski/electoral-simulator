@@ -5,8 +5,6 @@ import { useSimulationStore } from "@/store/simulationStore";
 import { DEFAULT_PARTY_COLOR } from "@/utils/constants";
 import PositionSliders from "@/components/PositionSliders";
 
-// {simTabs === 'parties' && 
-
 export default function PartyConfig() {
   const {
     axes, parties,

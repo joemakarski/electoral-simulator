@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 
 import { useSimulationStore } from "@/store/simulationStore";
 
-import AxesConfig from "./tabs/AxesConfig";
-import DemographicsConfig from "./tabs/DemographicsConfig";
-import DistrictEditor from "./tabs/DistrictEditor";
+import AxesConfig from "@/components/builder/tabs/AxesConfig";
+import DemographicsConfig from "@/components/builder/tabs/DemographicsConfig";
+import DistrictEditor from "@/components/builder/tabs/DistrictEditor";
 
 export default function BuilderControls() {
 
