@@ -30,7 +30,7 @@ export default function DemographicsConfig() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6">
+    <div>
       <div className="flex justify-between items-center mb-5 border-b border-gray-100 pb-3">
         <h2 className="text-lg font-bold text-gray-800">Voter Profiles</h2>
         <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Demographics</span>
