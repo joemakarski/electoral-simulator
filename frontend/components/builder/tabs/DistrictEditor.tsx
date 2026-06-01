@@ -103,7 +103,7 @@ export default function DistrictEditor() {
                     className="w-full p-2.5 border border-gray-300 rounded-md font-semibold text-gray-800 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                   />
                 </div>
-                <div className="w-24">
+                <div className="w-16 flex-none">
                   <label className="text-xs font-bold text-gray-500 uppercase block mb-1.5">Seats</label>
                   <input 
                     type="number" min="1" max="256" value={selectedTile.num_seats === 0 ? "" : selectedTile.num_seats}
@@ -148,12 +148,12 @@ export default function DistrictEditor() {
                     <div key={p.id} className="flex items-center gap-3 mb-1">
                       <div className="w-3.5 h-3.5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: p.color }} />
                       <span className="text-sm font-semibold text-gray-700 flex-1 truncate">{p.name}</span>
-                      <div className="flex items-center gap-1.5">
+                      <div className="items-center gap-1.5">
                         <input 
                           type="number" min="0" max="100" 
                           value={selectedTile.demographics[p.id] || ""}
                           onChange={(e) => handleDemographicChange(p.id, parseInt(e.target.value))}
-                          className="w-16 p-1.5 border border-gray-300 rounded-md text-right text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                          className="w-16 p-1.5 border border-gray-300 rounded-md text-right text-sm font-bold focus:ring-2 focus:ring-indigo-500 flex-none outline-none transition-all"
                           placeholder="0"
                         />
                         <span className="text-gray-400 text-sm font-bold">%</span>

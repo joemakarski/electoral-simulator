@@ -146,7 +146,7 @@ export default function MapGrid() {
   return (
     <div className="flex flex-col items-center">
       <div 
-        className={`grid grid-cols-10 gap-1.5 p-3 bg-orange-50 border-4 rounded-xl shadow-inner w-fit select-none ${
+        className={`grid grid-cols-10 gap-0.5 sm:gap-1.5 p-1 sm:p-3 bg-orange-50 border-4 rounded-xl shadow-inner w-[256px] sm:w-[450px] select-none ${
           isNationLocked ? "border-gray-500" : "border-gray-300"
         }`}
       >
@@ -156,7 +156,7 @@ export default function MapGrid() {
             <div
               key={tile.id}
               onClick={() => handleTileClick(tile.id)}
-              className={`w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center text-sm transition-all duration-200 ${props.className}`}
+              className={`w-full aspect-square rounded sm:rounded-lg flex items-center justify-center text-[10px] sm:text-sm transition-all duration-200 ${props.className}`}
               style={props.style}
               title={tile.isActive ? `${tile.name} (${tile.num_seats} seats)` : "Empty Land"}
             >

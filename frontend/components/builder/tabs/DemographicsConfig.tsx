@@ -46,7 +46,7 @@ export default function DemographicsConfig() {
           <input 
             type="text" placeholder="e.g. Traditionalists..." value={newName}
             onChange={(e) => setNewName(e.target.value)} 
-            className="flex-1 p-2.5 min-w-40 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+            className="flex-1 p-2.5 min-w-0 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
           />
         </div>
         <button 

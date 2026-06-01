@@ -46,11 +46,11 @@ export default function PartyConfig() {
           />
           <input
             type="text" placeholder="Party Name..." value={newPartyName} onChange={(e) => setNewPartyName(e.target.value)}
-            className="flex-1 p-2.5 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+            className="flex-1 min-w-0 p-2.5 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
           />
           <button
             onClick={handleAddParty} disabled={!newPartyName.trim()}
-            className="bg-blue-600 text-white px-5 py-2.5 rounded-md hover:bg-blue-700 font-bold text-sm transition-colors disabled:bg-gray-300 whitespace-nowrap"
+            className="min-w-0 bg-blue-600 text-white px-5 py-2.5 rounded-md hover:bg-blue-700 font-bold text-sm transition-colors disabled:bg-gray-300 whitespace-nowrap"
           >
             Add Party
           </button>
