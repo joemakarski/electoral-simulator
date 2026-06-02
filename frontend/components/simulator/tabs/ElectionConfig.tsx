@@ -1,6 +1,7 @@
 'use client';
 
 import { useSimulationStore } from "@/store/simulationStore";
+import { ElectoralSystem } from "@/types";
 
 export default function ElectionConfig() {
 
@@ -13,7 +14,8 @@ export default function ElectionConfig() {
   const systemDescriptions: Record<string, string> = {
     "plurality": "Voters vote for one candidate. Candidates with the N most votes in each district win, where N is the number of seats.",
     "listpr": "Individual candidate votes determine who within the parties get elected, but seats are split based on the parties' proportions of the vote. ",
-    "mmp": "Voters vote for a candidate and party. Party list candidates are added onto the plurality-based district results in a way that can compensate for disproportionality."
+    "mmp": "Voters vote for a candidate and party. Party list candidates are added onto the plurality-based district results in a way that can compensate for disproportionality.",
+    "stv": "Voters rank the candidates, and the vote is transferred to their next choice if their preferred choice surpasses the quota or is eliminated, until all seats are filled.",
   }
 
   return (
@@ -24,13 +26,13 @@ export default function ElectionConfig() {
         <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2.5 block">Electoral System</h2>
         <select
           value={activeSystem}
-          onChange={(e) => setActiveSystem(e.target.value)}
+          onChange={(e) => setActiveSystem((e.target.value) as ElectoralSystem)}
           className="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg font-semibold text-gray-800 focus:ring-2 focus:ring-indigo-500 outline-none transition-all cursor-pointer"
         >
           <option value="plurality">Plurality (SNTV/FPTP)</option>
           <option value="listpr">Regional PR (open list)</option>
           <option value="mmp">Mixed-Member Proportional (MMP)</option>
-          <option disabled value="stv">To-do: Single Transferable Vote</option>
+          <option value="stv">Single Transferable Vote</option>
         </select>
         <p className="text-xs text-gray-500 mt-2 leading-snug mt-2">
           {systemDescriptions[activeSystem] || "An electoral system can affect the way voters vote, and how ballots are counted."}

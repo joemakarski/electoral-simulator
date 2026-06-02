@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { faker } from '@faker-js/faker'
 
 import {
+    ElectoralSystem,
     DistrictTile,
     DemographicProfile,
     Party,
@@ -14,18 +15,18 @@ import { FAKER_SEED, CANDIDATE_LIST_SIZE } from '@/utils/constants'
 interface SimulationState {
     // Map and District State
     grid: DistrictTile[];
-    toggleTileActive: (id: number) => void;
-    updateDistrictTile: (id: number, updates: Partial<DistrictTile>) => void;
+    toggleTileActive: (id: string) => void;
+    updateDistrictTile: (id: string, updates: Partial<DistrictTile>) => void;
     
-    selectedDistrictId: number | null;
-    setSelectedDistrictId: (id: number | null) => void;
+    selectedDistrictId: string | null;
+    setSelectedDistrictId: (id: string | null) => void;
 
     isNationLocked: boolean;
     setNationLocked: (locked: boolean) => void;
 
     // System & Results
-    activeSystem: string;
-    setActiveSystem: (system: string) => void;
+    activeSystem: ElectoralSystem;
+    setActiveSystem: (system: ElectoralSystem) => void;
     results: any; 
     setResults: (results: any) => void;    
 
@@ -61,7 +62,7 @@ interface SimulationState {
 export const useSimulationStore = create<SimulationState>((set, get) => ({
     // Initialize 100 tiles, all inactive by default
     grid: Array.from({length: 100}, (_, i) => ({ 
-        id: i, 
+        id: String(i), 
         isActive: false, 
         name: `District ${i + 1}`, 
         num_seats: 1, 

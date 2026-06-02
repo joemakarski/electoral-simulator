@@ -1,8 +1,8 @@
-import { DistrictTile, Candidate, DemographicProfile, SimulationPayload } from "@/types";
+import { DistrictTile, Candidate, DemographicProfile, SimulationPayload, ElectoralSystem } from "@/types";
 import { BASE_DISTRICT_POPULATION } from "@/utils/constants";
 
 export function buildSimulationPayload(
-  activeSystem: string,
+  activeSystem: ElectoralSystem,
   grid: DistrictTile[],
   candidates: Candidate[],
   demographicProfiles: DemographicProfile[],

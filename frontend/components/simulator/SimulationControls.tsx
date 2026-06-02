@@ -40,6 +40,8 @@ export default function SimulationControls() {
           body: JSON.stringify(payload),
       });
       const data = await response.json();
+      // console.log(payload)
+      // console.log(data)
       setResults(data);
     } catch (error) {
       console.error("Simulation failed:", error);
