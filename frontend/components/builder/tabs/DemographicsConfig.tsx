@@ -31,49 +31,47 @@ export default function DemographicsConfig() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-5 border-b border-gray-100 pb-3">
+      <div className="flex justify-between items-center mb-4 border-b border-gray-100 pb-2.5">
         <h2 className="text-lg font-bold text-gray-800">Voter Profiles</h2>
         <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Demographics</span>
       </div>
 
-      {/* Add Profile Form */}
-      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-5 shadow-sm flex flex-col gap-3">
-        <div className="flex items-center gap-3">
-          <input 
-            type="color" value={newColor} onChange={(e) => setNewColor(e.target.value)}
-            className="w-10 h-10 p-1 border border-gray-300 rounded-md cursor-pointer shrink-0" 
-          />
-          <input 
-            type="text" placeholder="e.g. Traditionalists..." value={newName}
-            onChange={(e) => setNewName(e.target.value)} 
-            className="flex-1 p-2.5 min-w-0 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-          />
-        </div>
+      {/* Add Profile Form (Converted to a single inline row) */}
+      <div className="bg-gray-50 p-3.5 rounded-lg border border-gray-200 mb-4 shadow-sm flex items-center gap-2.5">
+        <input 
+          type="color" value={newColor} onChange={(e) => setNewColor(e.target.value)}
+          className="w-8 h-8 p-0.5 border border-gray-300 rounded cursor-pointer shrink-0 hover:ring-2 hover:ring-emerald-400" 
+        />
+        <input 
+          type="text" placeholder="e.g. Traditionalists..." value={newName}
+          onChange={(e) => setNewName(e.target.value)} 
+          className="flex-1 py-1.5 px-3 min-w-0 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+        />
         <button 
           onClick={handleAdd} disabled={!newName.trim()}
-          className="w-full bg-emerald-600 text-white px-4 py-2.5 rounded-md hover:bg-emerald-700 font-bold text-sm transition-colors disabled:bg-gray-300"
+          className="bg-emerald-600 text-white px-4 py-1.5 rounded hover:bg-emerald-700 font-bold text-sm transition-colors disabled:bg-gray-300 shadow-sm whitespace-nowrap"
         >
-          Add Profile
+          Add
         </button>
       </div>
 
       {/* Profiles List */}
-      <div className="flex flex-col gap-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+      <div className="flex flex-col gap-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
         {demographicProfiles.map((p) => (
-          <div key={p.id} className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm shrink-0" style={{ borderLeft: `6px solid ${p.color}` }}>
+          <div key={p.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm shrink-0" style={{ borderLeft: `4px solid ${p.color}` }}>
             
-            {/* Header: Profile name */}
-            <div className="flex justify-between items-start mb-4 pb-3 border-b border-gray-100">
-              <div className="font-bold text-gray-800 break-words pr-4 leading-tight">{p.name}</div>
+            {/* Compact Header (No Border) */}
+            <div className="flex justify-between items-center mb-3">
+              <div className="font-bold text-gray-800 text-base truncate pr-4">{p.name}</div>
               <button 
                 onClick={() => removeDemographicProfile(p.id)} 
-                className="text-gray-400 hover:text-red-500 font-bold text-lg transition-colors leading-none"
+                className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors text-sm shrink-0"
+                title="Delete Profile"
               >
                 ✕
               </button>
             </div>
             
-            {/* Profile sliders */}
             <PositionSliders
               axes={axes}
               positions={p.positions}
