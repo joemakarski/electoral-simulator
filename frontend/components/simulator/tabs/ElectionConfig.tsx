@@ -2,14 +2,25 @@
 
 import { useSimulationStore } from "@/store/simulationStore";
 import { ElectoralSystem } from "@/types";
+import { useState } from "react";
+
+
+import { API_URL } from "@/utils/constants";
+import { buildSimulationPayload } from "@/utils/buildPayload";
+
 
 export default function ElectionConfig() {
 
   const { 
+    grid, axes, parties,
+    generateCandidates, 
     activeSystem, setActiveSystem,
-    candidateFuzzLevel, setCandidateFuzzLevel,
+    setResults, setNationLocked, demographicProfiles,
     voterFuzzLevel, setVoterFuzzLevel,
-  } = useSimulationStore()
+    candidateFuzzLevel, setCandidateFuzzLevel,
+  } = useSimulationStore();
+
+  const [loading, setLoading] = useState(false);
 
   const systemDescriptions: Record<string, string> = {
     "plurality": "Voters vote for one candidate. Candidates with the N most votes in each district win, where N is the number of seats.",
@@ -17,6 +28,33 @@ export default function ElectionConfig() {
     "mmp": "Voters vote for a candidate and party. Party list candidates are added onto the plurality-based district results in a way that can compensate for disproportionality.",
     "stv": "Voters rank the candidates, and the vote is transferred to their next choice if their preferred choice surpasses the quota or is eliminated, until all seats are filled.",
   }
+
+  // Generate candidates, then HTTP POST the simulation payload and set the results
+  const runSimulation = async () => {
+    setLoading(true);
+
+    generateCandidates();
+    const latestCandidates = useSimulationStore.getState().candidates;
+
+    const payload = buildSimulationPayload(
+      activeSystem, grid, latestCandidates, demographicProfiles, axes, voterFuzzLevel
+    )
+    try {
+      const response = await fetch(`${API_URL}/api/simulate/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      // console.log(payload)
+      // console.log(data)
+      setResults(data);
+    } catch (error) {
+      console.error("Simulation failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
@@ -84,6 +122,28 @@ export default function ElectionConfig() {
           </div>
         </div>
       </div>
+
+      {/* Key Buttons (Pinned Bottom) */}
+      <div className="flex gap-3 shrink-0">
+        <button 
+          onClick={() => { setNationLocked(false); setResults(null); }}
+          className="bg-white border border-gray-300 text-gray-700 px-8 py-3 rounded-xl font-bold 
+                    hover:bg-gray-100 hover:text-gray-900 transition-colors shadow-sm"
+        >
+          Unlock Map
+        </button>
+
+        <button 
+          onClick={runSimulation}
+          disabled={loading || parties.length === 0}
+          className="flex-1 bg-green-600 text-white py-4 px-6 rounded-xl font-bold text-lg 
+                    hover:bg-green-700 disabled:bg-gray-300 shadow-md transition-colors"
+        >
+          {loading ? "Calculating..." : "Run Election"}
+        </button>
+
+      </div>
+
     </div>
   )
 }

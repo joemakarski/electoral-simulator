@@ -2,53 +2,12 @@
 
 import { useState } from "react";
 
-import { useSimulationStore } from "@/store/simulationStore";
-import { API_URL } from "@/utils/constants";
-import { buildSimulationPayload } from "@/utils/buildPayload";
-
 import PartyConfig from "@/components/simulator/tabs/PartyConfig";
 import ElectionConfig from "@/components/simulator/tabs/ElectionConfig";
 
 export default function SimulationControls() {
-  const { 
-    grid, axes, parties,
-    generateCandidates, 
-    activeSystem, 
-    setResults, setNationLocked, demographicProfiles,
-    voterFuzzLevel
-  } = useSimulationStore();
-
-  const [loading, setLoading] = useState(false);
 
   const [simTab, setSimTab] = useState<'parties' | 'election'>('parties');
-
-
-  // Generate candidates, then HTTP POST the simulation payload and set the results
-  const runSimulation = async () => {
-    setLoading(true);
-
-    generateCandidates();
-    const latestCandidates = useSimulationStore.getState().candidates;
-
-    const payload = buildSimulationPayload(
-      activeSystem, grid, latestCandidates, demographicProfiles, axes, voterFuzzLevel
-    )
-    try {
-      const response = await fetch(`${API_URL}/api/simulate/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-      });
-      const data = await response.json();
-      // console.log(payload)
-      // console.log(data)
-      setResults(data);
-    } catch (error) {
-      console.error("Simulation failed:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="bg-white rounded-lg shadow-sm border overflow-hidden flex flex-col">
@@ -77,28 +36,9 @@ export default function SimulationControls() {
 
 
         {/* Main Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar min-h-[300px] p-6">
+        <div className="flex-1 overflow-y-auto custom-scrollbar min-h-[200px] p-6">
           {simTab === 'parties' && <PartyConfig /> }
           {simTab === 'election' && <ElectionConfig />}
-        </div>
-
-
-        {/* Key Buttons (Pinned Bottom) */}
-        <div className="bg-gray-50 border-t border-gray-200 p-6 flex gap-3 shrink-0">
-          <button 
-            onClick={() => { setNationLocked(false); setResults(null); }}
-            className="bg-white border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-bold text-sm hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm"
-          >
-            Unlock Map
-          </button>
-
-          <button 
-            onClick={runSimulation}
-            disabled={loading || parties.length === 0}
-            className="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold text-base hover:bg-green-700 disabled:bg-gray-300 shadow-sm transition-colors"
-          >
-            {loading ? "Calculating..." : "Run Election"}
-          </button>
         </div>
       </div>
     </div>
