@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from simulator.domain.entities import VoterBlock, Candidate, District
+from simulator.systems.registry import SYSTEM_REGISTRY
 
 
 class DistrictSerializer(serializers.Serializer):
@@ -38,7 +39,7 @@ class SimulationRequestSerializer(serializers.Serializer):
     sent by Next.js when the user runs an election.
     """
     system = serializers.ChoiceField(
-        choices=['plurality', 'listpr', 'mmp'] # Currently available systems only
+        choices=list(SYSTEM_REGISTRY.keys())
     ) 
     districts = DistrictSerializer(many=True)
     candidates = CandidateSerializer(many=True)

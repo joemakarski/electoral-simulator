@@ -3,21 +3,26 @@ from typing import List
 
 from simulator.domain.entities import PositionVector, VoterBlock
 
-def calculate_distance(voter_positions: PositionVector, candidate_positions: PositionVector) -> float:
+#TODO: consider utils.py vs base.py
+
+
+def calculate_distance(vector1: PositionVector, vector2: PositionVector) -> float:
     """
-    Calculates the Euclidean distance between a VoterBlock and a Candidate 
-    across any number of dimensions.
+    Calculates the Euclidean distance between two position vectors across any number of dimensions.
     """
     sum_of_squared_differences = 0.0
     
-    # For each voter position on an issue, compare with candidate's position on that issue  
-    for (axis, voter_value) in voter_positions.items():
-        candidate_value = candidate_positions.get(axis, 0.0) # assume 0 if no position
-         
-        sum_of_squared_differences += (candidate_value - voter_value) ** 2
+    for (axis, v1_val) in vector1.items():
+        v2_val = vector2.get(axis, 0.0) # assume 0 if no position
+        sum_of_squared_differences += (v2_val - v1_val) ** 2
         
     # Return the square root of the sum: sqrt( (x2-x1)^2 + (y2-y1)^2 + ... )
     return math.sqrt(sum_of_squared_differences)
+
+
+def exponential_decay(x: float, divisor: float) -> float:
+    return math.exp(-x / (divisor + 0.001))
+    
 
 def apply_voter_fuzzing(voters: List[VoterBlock], num_chunks: int = 10) -> List[VoterBlock]:
     """

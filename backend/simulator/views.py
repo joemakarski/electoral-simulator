@@ -5,17 +5,8 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from simulator.serializers import SimulationRequestSerializer
-from simulator.systems.plurality import Plurality
-from simulator.systems.listpr import OpenListProportionalRepresentation
-from simulator.systems.mmp import MixedMemberProportionalRepresentation
 from simulator.systems.utils import apply_voter_fuzzing
-
-import json
-SYSTEM_REGISTRY = {
-    'plurality': Plurality(),
-    'listpr': OpenListProportionalRepresentation(),
-    'mmp': MixedMemberProportionalRepresentation(),
-}
+from simulator.systems.registry import SYSTEM_REGISTRY
 
 class RunSimulationView(APIView):
     """
