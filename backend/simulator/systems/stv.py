@@ -43,6 +43,8 @@ class SingleTransferableVote(ElectoralSystem):
             candidates_by_weight = sorted(candidate_weights.keys(), key=lambda k: candidate_weights[k], reverse=True)
             allocated_votes = 0
             
+            block_idx = len(ballots)
+
             for first_choice_id in candidates_by_weight: 
                 vote_share = candidate_weights[first_choice_id] / total_weight
                 votes = int(block.population * vote_share)
@@ -61,10 +63,10 @@ class SingleTransferableVote(ElectoralSystem):
                 ))
                 allocated_votes += votes
 
-            # Absolute closest candidate gets remainder attached on
+            # Absolute closest candidate in this voting block gets remainder attached on
             remainder = block.population - allocated_votes
-            if remainder > 0 and ballots:
-                ballots[0].population_weight += remainder
+            if remainder > 0 and len(ballots) > block_idx:
+                ballots[block_idx].population_weight += remainder
 
         return ballots
     
@@ -81,11 +83,12 @@ class SingleTransferableVote(ElectoralSystem):
 
         for district in districts:
             local_candidates = [c for c in candidates if c.district_id == district.id]
+            local_ballots = [b for b in ballots if b.district_id == district.id]
 
             if not local_candidates or district.num_seats <= 0: continue
 
             (district_winners, round_logs) = self._perform_stv(
-                district.num_seats, ballots, candidates
+                district.num_seats, local_ballots, local_candidates
             )
 
             winners[district.id] = district_winners
