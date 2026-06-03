@@ -33,6 +33,11 @@ export default function ElectionConfig() {
           <option value="listpr">Regional PR (open list)</option>
           <option value="mmp">Mixed-Member Proportional (MMP)</option>
           <option value="stv">Single Transferable Vote (STV)</option>
+          <option value="2rs" disabled>To-do: Two Round System/Runoff</option>
+          <option value="block" disabled>To-do: Plurality (Block/FPTP)</option>
+          <option value="approval" disabled>To-do: Approval</option>
+          <option value="lottery" disabled>To-do: Lottery</option>
+
         </select>
         <p className="text-xs text-gray-500 mt-2 leading-snug mt-2">
           {systemDescriptions[activeSystem] || "An electoral system can affect the way voters vote, and how ballots are counted."}
