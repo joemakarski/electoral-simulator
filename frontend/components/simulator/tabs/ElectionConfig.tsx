@@ -32,7 +32,7 @@ export default function ElectionConfig() {
           <option value="plurality">Plurality (SNTV/FPTP)</option>
           <option value="listpr">Regional PR (open list)</option>
           <option value="mmp">Mixed-Member Proportional (MMP)</option>
-          <option value="stv">Single Transferable Vote</option>
+          <option value="stv">Single Transferable Vote (STV)</option>
         </select>
         <p className="text-xs text-gray-500 mt-2 leading-snug mt-2">
           {systemDescriptions[activeSystem] || "An electoral system can affect the way voters vote, and how ballots are counted."}

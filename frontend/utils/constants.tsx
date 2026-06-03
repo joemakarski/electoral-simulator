@@ -3,3 +3,5 @@ export const CANDIDATE_LIST_SIZE = 15;
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 export const FAKER_SEED = 100
 export const DEFAULT_PARTY_COLOR = "#9333ea"
+
+//                      backgroundColor: isEliminated && !isTarget ? '#d1d5db' : meta.color 

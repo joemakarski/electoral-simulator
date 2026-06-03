@@ -64,7 +64,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     grid: Array.from({length: 100}, (_, i) => ({ 
         id: String(i), 
         isActive: false, 
-        name: `District ${i + 1}`, 
+        name: `District ${Number(i) + 1}`, 
         num_seats: 1, 
         demographics: {}
     })),

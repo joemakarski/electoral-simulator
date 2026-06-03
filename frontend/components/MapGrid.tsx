@@ -122,7 +122,7 @@ export default function MapGrid() {
   };
 
   // Click Handler changes behavior natively based on the simulation phase
-  const handleTileClick = (tileId: number) => {
+  const handleTileClick = (tileId: string) => {
     const tile = grid.find(t => t.id === tileId);
     if (!tile) return;
 
@@ -171,7 +171,7 @@ export default function MapGrid() {
         {!isNationLocked ? (
           <span className="text-neutral-400">Click tiles to create and edit districts. Delete using backspace.</span>
         ) : selectedDistrictId !== null ? (
-          <span className="text-indigo-600">Inspecting District {selectedDistrictId + 1}</span>
+          <span className="text-indigo-600">Inspecting District {Number(selectedDistrictId) + 1}</span>
         ) : (
           <span className="text-neutral-600"> Click an active district to inspect it.</span>
         )}

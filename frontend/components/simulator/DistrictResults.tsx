@@ -2,6 +2,7 @@
 
 import { useSimulationStore } from "@/store/simulationStore";
 import { CandidateResult } from "@/types";
+import RoundViewer from "@/components/simulator/RoundViewer"
 
 export default function DistrictResults() {
   const { 
@@ -20,6 +21,8 @@ export default function DistrictResults() {
 
   const districtKey = `d${district.id}`;
   const localCandidates = candidates.filter(c => c.district_id === districtKey);
+
+  const stvRounds = results?.results?.rounds?.[districtKey] || null;
 
   const hasResults = !!(
     results && 
@@ -129,7 +132,13 @@ export default function DistrictResults() {
             })}
           </div>
         )
-      ) : (
+      ) : stvRounds && stvRounds.length > 0 ? (
+            <RoundViewer 
+              rounds={stvRounds} 
+              candidates={localCandidates} 
+              parties={parties} 
+            />
+          ) : (
         // Post-election view
         <div className="flex flex-col gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
           {candidatePerformance.map((cand) => {
