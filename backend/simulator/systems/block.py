@@ -3,10 +3,12 @@ from typing import Dict, List
 from simulator.domain.entities import VoterBlock, Candidate, Ballot, District
 from simulator.systems.base import ElectoralSystem
 
-class Plurality(ElectoralSystem):
-    """Simulate a plurality system, where voters cast a single vote and the top candidates win."""
+#TODO: implement on frontend
+
+class BlockVoting(ElectoralSystem):
+    """Simulate a plurality block voting system, where voters cast as many votes as there are seats."""
     def __str__(self):
-        return "Plurality (SNTV/FPTP)"
+        return "Plurality Block"
     
     def simulate_voting(self, voters: List[VoterBlock], candidates: List[Candidate]) -> List[Ballot]:
         ballots = []

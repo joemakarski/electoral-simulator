@@ -60,5 +60,4 @@ def apply_voter_fuzzing(voters: List[VoterBlock], num_chunks: int = 10) -> List[
                 district_id=block.district_id,
                 fuzz_level=block.fuzz_level
             ))
-    print("Smeared into", len(smeared_votes))
     return smeared_votes

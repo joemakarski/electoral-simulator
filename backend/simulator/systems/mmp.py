@@ -3,7 +3,6 @@ from collections import defaultdict
 
 from simulator.domain.entities import VoterBlock, Candidate, Ballot, District
 from simulator.systems.base import ElectoralSystem
-from simulator.systems.utils import calculate_distance
 
 class MixedMemberProportionalRepresentation(ElectoralSystem):
     """
